@@ -97,6 +97,10 @@ def normalise_company_name(name: str) -> str:
     return re.sub(r"\s+", " ", name).strip()
 
 
+def derived_company_name(domain: str) -> str:
+    return domain.split(".")[0].replace("-", " ").title()
+
+
 def name_from_email(email: str) -> str:
     local = email.split("@", 1)[0]
     local = re.sub(r"\+.*$", "", local)
@@ -255,10 +259,12 @@ class Resolver:
         if domain and (hit := self._by_identifier("domain", domain)):
             if registry_id:
                 self.add_identifier(hit, "registry_id", registry_id, source_id)
+            if name:
+                self._upgrade_derived_name(hit, domain, name)
             return Resolution(hit, False, "identifier")
         if not name and not domain:
             return None
-        name = name or domain.split(".")[0].capitalize()  # type: ignore[union-attr]
+        name = name or derived_company_name(domain)  # type: ignore[arg-type]
 
         best: tuple[float, dict[str, Any]] | None = None
         norm = normalise_company_name(name)
@@ -315,6 +321,19 @@ class Resolver:
             )
             return Resolution(entity_id, True, "provisional", best[0], queued=True)
         return Resolution(entity_id, True, "new")
+
+    def _upgrade_derived_name(self, company_id: UUID, domain: str, name: str) -> None:
+        """A company first seen only as an email domain gets a placeholder name
+        ("Kilimodata"); replace it when a source supplies the real one."""
+        derived = derived_company_name(domain)
+        if name.strip() and name.strip() != derived:
+            self.conn.execute(
+                "UPDATE companies SET name = %s WHERE id = %s AND name = %s", (name.strip(), company_id, derived)
+            )
+            self.conn.execute(
+                "UPDATE entities SET canonical_name = %s, updated_at = now() WHERE id = %s AND canonical_name = %s",
+                (name.strip(), company_id, derived),
+            )
 
     # -- people ----------------------------------------------------------------
 
