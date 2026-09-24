@@ -30,6 +30,7 @@ firstlook-workflows = { workspace = true }
 [dependency-groups]
 dev = [
     "pytest>=8.3",
+    "pytest-asyncio>=0.24",
     "respx>=0.22",
     "ruff>=0.13",
     "firstlook-core",
@@ -52,6 +53,7 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 testpaths = ["packages/pycore/tests", "packages/fixtures/tests", "services/ingest/tests", "services/resolver/tests", "services/ai/tests", "services/gateway/tests", "workflows/tests"]
 addopts = "-q --import-mode=importlib"
+asyncio_mode = "auto"
 markers = [
     "db: needs the local Postgres (make up); skipped when unavailable",
     "integration: needs other local infrastructure",
