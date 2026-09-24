@@ -72,3 +72,20 @@ def test_resolver_rules(make_tenant, llm):
         # Registry ID is authoritative.
         k = r.resolve_company(name="Kilimo Data Ltd", registry_id="PVT-123")
         assert r.resolve_company(name="Kilimo", registry_id="PVT-123").entity_id == k.entity_id
+
+
+@pytest.mark.db
+def test_name_matches_company_known_only_by_domain(make_tenant, llm):
+    from firstlook_core.db import tenant_tx
+
+    t, _ = make_tenant("Domain Fund")
+    with tenant_tx(t) as conn:
+        r = Resolver(conn, t, llm)
+        placeholder = r.resolve_company(domain="riftvalley.vc")
+        named = r.resolve_company(name="Rift Valley Partners")
+        assert named.entity_id == placeholder.entity_id
+        row = conn.execute("SELECT name FROM companies WHERE id = %s", (placeholder.entity_id,)).fetchone()
+        assert row["name"] == "Rift Valley Partners"
+        # Short labels are too ambiguous to match on.
+        short = r.resolve_company(domain="abcd.io")
+        assert r.resolve_company(name="Abcd Bakery").entity_id != short.entity_id

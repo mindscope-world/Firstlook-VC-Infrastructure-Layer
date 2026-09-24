@@ -15,6 +15,7 @@ import hashlib
 import json
 import re
 import sys
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
@@ -30,6 +31,9 @@ from firstlook_ingest.raw import land
 
 from .fund import FundFixture, harbor, savanna
 
+DATA = Path(__file__).resolve().parents[2] / "data"
+_CANDIDATE = re.compile(r"^\[(c\d+)\] (.+)$", re.M)
+_FACT = re.compile(r"^  (c\d+\.f\d+): (.+)$", re.M)
 _ID = re.compile(r'<interaction id="<([^@>]+)@fixtures\.firstlook\.local>"')
 
 
@@ -37,10 +41,67 @@ def golden_llm(fixtures: list[FundFixture]) -> FakeLlm:
     golden = {e.key: e.golden for f in fixtures for e in f.emails}
 
     def respond(task: str, system: str, user: str, schema: dict[str, Any]) -> dict[str, Any]:
+        if task == "sourcing.rerank":
+            return fixture_rerank(user)
         m = _ID.search(user)
         return golden.get(m.group(1), {}) if m else {"intros": [], "next_steps": [], "deal_mentions": []}
 
     return FakeLlm(responder=respond)
+
+
+def fixture_rerank(prompt: str) -> dict[str, Any]:
+    """Deterministic stand-in for the stage-2 model in offline seeds: scores by
+    evidence found in the facts and says plainly that it is a fixture."""
+    thesis = prompt.split("</thesis>")[0].lower()
+    facts: dict[str, list[tuple[str, str]]] = {}
+    for fid, text in _FACT.findall(prompt):
+        facts.setdefault(fid.split(".")[0], []).append((fid, text))
+    rankings = []
+    for key, name in _CANDIDATE.findall(prompt):
+        fs = facts.get(key, [])
+        text = " ".join(t for _, t in fs).lower()
+        fit = 40
+        fit += (
+            15
+            if any(s in text for s in ("fintech", "agritech"))
+            and any(s in thesis for s in ("fintech", "agritech"))
+            else 0
+        )
+        fit += 10 if "relationship:" in text else 0
+        fit += 10 if "open roles" in text or "github" in text else 0
+        fit += 10 if "raised $" in text else 0
+        fit -= 20 if "already in the pipeline" in text else 0
+        evidence = [fid for fid, _ in fs[:3]]
+        rankings.append(
+            {
+                "company_key": key,
+                "fit": max(0, min(100, fit)),
+                "rationale": f"[Fixture rationale, no model call] {name}: " + "; ".join(t for _, t in fs[:2]),
+                "concerns": "" if len(fs) >= 3 else "Little evidence beyond the profile.",
+                "evidence": evidence,
+            }
+        )
+    return {"rankings": rankings}
+
+
+def seed_sourcing(fixture: FundFixture, tenant_id: UUID) -> None:
+    from firstlook_sourcing.collect import Collector, import_registry
+    from firstlook_sourcing.run import create_thesis, score_all
+    from firstlook_sourcing.sources.news import parse_feed
+    from firstlook_sourcing.sources.vendor import SandboxVendor
+
+    if not fixture.theses:
+        return
+    with tenant_tx(tenant_id) as conn:
+        admin = conn.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1").fetchone()["id"]
+        for t in fixture.theses:
+            create_thesis(conn, tenant_id, user_id=admin, **t)
+        news = parse_feed((DATA / "news_feed.xml").read_text(), "https://news.example/feed")
+        collector = Collector(conn, tenant_id, vendor=SandboxVendor(DATA / "vendor_sandbox.json"))
+        collector.discover(news)
+        collector.enrich(news)
+        import_registry(conn, tenant_id, (DATA / "ke_brs_extract.csv").read_text())
+        score_all(conn, tenant_id)
 
 
 def _drain(bus: InMemoryBus) -> None:
@@ -124,6 +185,7 @@ def seed_fund(fixture: FundFixture, bus: InMemoryBus) -> UUID:
                 actor_id=admin_id,
             )
     _drain(bus)
+    seed_sourcing(fixture, tenant_id)
 
     with tenant_tx(tenant_id) as conn:
         counts = conn.execute(
@@ -132,7 +194,8 @@ def seed_fund(fixture: FundFixture, bus: InMemoryBus) -> UUID:
             " (SELECT count(*) FROM companies) AS companies,"
             " (SELECT count(*) FROM extractions) AS extractions,"
             " (SELECT count(*) FROM er_candidates WHERE status = 'pending') AS review,"
-            " (SELECT count(*) FROM edges WHERE type = 'knows' AND valid_to IS NULL) AS knows"
+            " (SELECT count(*) FROM edges WHERE type = 'knows' AND valid_to IS NULL) AS knows,"
+            " (SELECT count(*) FROM company_scores) AS scored_companies"
         ).fetchone()
     print(f"  {fixture.name}: " + ", ".join(f"{v} {k}" for k, v in counts.items()))
     return tenant_id

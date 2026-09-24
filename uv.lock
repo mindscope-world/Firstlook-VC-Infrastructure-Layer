@@ -10,6 +10,7 @@ members = [
     "firstlook-gateway",
     "firstlook-ingest",
     "firstlook-resolver",
+    "firstlook-sourcing",
     "firstlook-workflows",
     "firstlook-workspace",
 ]
@@ -276,6 +277,7 @@ dependencies = [
     { name = "firstlook-core" },
     { name = "firstlook-ingest" },
     { name = "firstlook-resolver" },
+    { name = "firstlook-sourcing" },
 ]
 
 [package.metadata]
@@ -284,6 +286,7 @@ requires-dist = [
     { name = "firstlook-core", editable = "packages/pycore" },
     { name = "firstlook-ingest", editable = "services/ingest" },
     { name = "firstlook-resolver", editable = "services/resolver" },
+    { name = "firstlook-sourcing", editable = "services/sourcing" },
 ]
 
 [[package]]
@@ -350,6 +353,25 @@ requires-dist = [
 ]
 
 [[package]]
+name = "firstlook-sourcing"
+version = "0.1.0"
+source = { editable = "services/sourcing" }
+dependencies = [
+    { name = "firstlook-core" },
+    { name = "firstlook-ingest" },
+    { name = "firstlook-resolver" },
+    { name = "httpx" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "firstlook-core", editable = "packages/pycore" },
+    { name = "firstlook-ingest", editable = "services/ingest" },
+    { name = "firstlook-resolver", editable = "services/resolver" },
+    { name = "httpx", specifier = ">=0.28" },
+]
+
+[[package]]
 name = "firstlook-workflows"
 version = "0.1.0"
 source = { editable = "workflows" }
@@ -358,6 +380,7 @@ dependencies = [
     { name = "firstlook-core" },
     { name = "firstlook-ingest" },
     { name = "firstlook-resolver" },
+    { name = "firstlook-sourcing" },
     { name = "temporalio" },
 ]
 
@@ -367,6 +390,7 @@ requires-dist = [
     { name = "firstlook-core", editable = "packages/pycore" },
     { name = "firstlook-ingest", editable = "services/ingest" },
     { name = "firstlook-resolver", editable = "services/resolver" },
+    { name = "firstlook-sourcing", editable = "services/sourcing" },
     { name = "temporalio", specifier = ">=1.8" },
 ]
 
@@ -383,6 +407,7 @@ dev = [
     { name = "firstlook-gateway" },
     { name = "firstlook-ingest" },
     { name = "firstlook-resolver" },
+    { name = "firstlook-sourcing" },
     { name = "firstlook-workflows" },
     { name = "honcho" },
     { name = "pytest" },
@@ -401,6 +426,7 @@ dev = [
     { name = "firstlook-gateway", editable = "services/gateway" },
     { name = "firstlook-ingest", editable = "services/ingest" },
     { name = "firstlook-resolver", editable = "services/resolver" },
+    { name = "firstlook-sourcing", editable = "services/sourcing" },
     { name = "firstlook-workflows", editable = "workflows" },
     { name = "honcho", specifier = ">=2.0" },
     { name = "pytest", specifier = ">=8.3" },

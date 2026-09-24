@@ -14,6 +14,7 @@ from uuid import UUID
 import psycopg
 
 from firstlook_core import audit, outbox
+from firstlook_core.geo import normalise_country
 from firstlook_core.llm import LlmClient
 from firstlook_resolver.er import Resolver
 
@@ -104,7 +105,7 @@ def import_records(
                 name=c.name,
                 domain=c.domain,
                 source_id=source_id,
-                country=c.country,
+                country=normalise_country(c.country),
                 description=c.description,
             )
             if res is None:
@@ -116,7 +117,7 @@ def import_records(
         conn.execute(
             "UPDATE companies SET country = coalesce(country, %s), description = coalesce(description, %s)"
             " WHERE id = %s",
-            (c.country, c.description, entity),
+            (normalise_country(c.country), c.description, entity),
         )
         company_ids[(c.domain or c.name).lower()] = entity
         result.companies += 1

@@ -15,6 +15,7 @@ members = [
     "services/resolver",
     "services/ai",
     "services/gateway",
+    "services/sourcing",
     "workflows",
 ]
 
@@ -25,6 +26,7 @@ firstlook-ingest = { workspace = true }
 firstlook-resolver = { workspace = true }
 firstlook-ai = { workspace = true }
 firstlook-gateway = { workspace = true }
+firstlook-sourcing = { workspace = true }
 firstlook-workflows = { workspace = true }
 
 [dependency-groups]
@@ -40,6 +42,7 @@ dev = [
     "firstlook-resolver",
     "firstlook-ai",
     "firstlook-gateway",
+    "firstlook-sourcing",
     "firstlook-workflows",
 ]
 
@@ -52,7 +55,7 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 ignore = ["E501"]
 
 [tool.pytest.ini_options]
-testpaths = ["packages/pycore/tests", "packages/fixtures/tests", "services/ingest/tests", "services/resolver/tests", "services/ai/tests", "services/gateway/tests", "workflows/tests"]
+testpaths = ["packages/pycore/tests", "packages/fixtures/tests", "services/ingest/tests", "services/resolver/tests", "services/ai/tests", "services/gateway/tests", "services/sourcing/tests", "workflows/tests"]
 addopts = "-q --import-mode=importlib"
 asyncio_mode = "auto"
 markers = [
@@ -61,4 +64,4 @@ markers = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["firstlook_core", "firstlook_fixtures", "firstlook_ingest", "firstlook_resolver", "firstlook_ai", "firstlook_gateway", "firstlook_workflows"]
+known-first-party = ["firstlook_core", "firstlook_fixtures", "firstlook_ingest", "firstlook_resolver", "firstlook_ai", "firstlook_gateway", "firstlook_sourcing", "firstlook_workflows"]
