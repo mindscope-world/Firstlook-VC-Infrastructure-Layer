@@ -26,16 +26,20 @@ def test_name_helpers():
 
 def test_strength_components():
     now = datetime(2026, 9, 25, tzinfo=UTC)
-    fresh = score(PairStats(last_at=now - timedelta(days=1), weighted=10, total=10, outbound=5, inbound=5), now)
-    stale = score(PairStats(last_at=now - timedelta(days=180), weighted=10, total=10, outbound=5, inbound=5), now)
-    one_way = score(PairStats(last_at=now - timedelta(days=1), weighted=10, total=10, outbound=10, inbound=0), now)
+    fresh = score(
+        PairStats(last_at=now - timedelta(days=1), weighted=10, total=10, outbound=5, inbound=5), now
+    )
+    stale = score(
+        PairStats(last_at=now - timedelta(days=180), weighted=10, total=10, outbound=5, inbound=5), now
+    )
+    one_way = score(
+        PairStats(last_at=now - timedelta(days=1), weighted=10, total=10, outbound=10, inbound=0), now
+    )
     assert fresh["strength"] > stale["strength"]
     assert fresh["strength"] > one_way["strength"]
     assert one_way["reciprocity"] == 0
-    assert stale["recency"] == pytest.approx(0.5 ** 4, rel=1e-3)
+    assert stale["recency"] == pytest.approx(0.5**4, rel=1e-3)
     assert 0 <= fresh["strength"] <= 1
-
-
 
 
 @pytest.mark.db

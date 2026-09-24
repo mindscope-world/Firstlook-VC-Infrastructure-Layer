@@ -9,6 +9,7 @@ import os
 import socket
 
 import pytest
+from cryptography.exceptions import InvalidTag
 
 from firstlook_core.adapters.bus import InMemoryBus
 from firstlook_core.adapters.kms import LocalKms
@@ -27,8 +28,15 @@ def _port_open(host: str, port: int) -> bool:
 def stores(tmp_path):
     out = [LocalFsStore(tmp_path)]
     if _port_open("localhost", 18333):
-        out.append(S3Store("firstlook-contract-test", "http://localhost:18333", "firstlook", "firstlook-secret",
-                           "us-east-1"))
+        out.append(
+            S3Store(
+                "firstlook-contract-test",
+                "http://localhost:18333",
+                "firstlook",
+                "firstlook-secret",
+                "us-east-1",
+            )
+        )
     return out
 
 
@@ -57,9 +65,9 @@ def test_kms_contract():
     wrapped = kms.wrap(dek, b"tenant-a")
     assert wrapped != dek
     assert kms.unwrap(wrapped, b"tenant-a") == dek
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidTag):
         kms.unwrap(wrapped, b"tenant-b")  # context-bound
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidTag):
         LocalKms(os.urandom(32)).unwrap(wrapped, b"tenant-a")  # different master key
 
 
@@ -69,7 +77,7 @@ def test_tenant_cipher_binds_tenant():
     blob = a.encrypt_json({"token": "secret"})
     assert b"secret" not in blob
     assert a.decrypt_json(blob) == {"token": "secret"}
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidTag):
         TenantCipher("b", dek).decrypt(blob)
 
 
@@ -92,11 +100,18 @@ def test_bus_contract():
         bus.flush()
         seen = []
         kwargs = {"idle_timeout": 10} if not isinstance(bus, InMemoryBus) else {}
-        n = bus.consume([topic], "g1", lambda e: seen.append(e.payload["n"]), max_events=2, **kwargs)
+        n = bus.consume(
+            [topic], "g1", lambda e, seen=seen: seen.append(e.payload["n"]), max_events=2, **kwargs
+        )
         assert n == 2 and seen == [1, 2]
         # A consumer group resumes after committed events.
-        more = bus.consume([topic], "g1", lambda e: seen.append(e.payload["n"]), max_events=1,
-                           **({"idle_timeout": 3} if kwargs else {}))
+        more = bus.consume(
+            [topic],
+            "g1",
+            lambda e, seen=seen: seen.append(e.payload["n"]),
+            max_events=1,
+            **({"idle_timeout": 3} if kwargs else {}),
+        )
         assert more == 0
 
 

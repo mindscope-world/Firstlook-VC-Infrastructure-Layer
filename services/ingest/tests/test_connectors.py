@@ -33,12 +33,23 @@ def test_google_sync_phases():
     respx.get(f"{GMAIL}/messages/m2").respond(json={"raw": b64(RAW), "labelIds": ["CATEGORY_PROMOTIONS"]})
     respx.get(f"{GMAIL}/messages/m3").respond(json={"raw": b64(RAW), "labelIds": ["Label_9"]})
     events_route = respx.get("https://www.googleapis.com/calendar/v3/calendars/primary/events")
-    events_route.respond(json={"items": [{"id": "e1", "summary": "Call", "start": {"dateTime": "2026-09-01T10:00:00+03:00"},
-                                          "end": {"dateTime": "2026-09-01T10:30:00+03:00"},
-                                          "attendees": [{"email": "x@y.com", "responseStatus": "accepted"}]}],
-                               "nextSyncToken": "sync-1"})
-    respx.get(f"{GMAIL}/history").respond(json={"history": [{"messagesAdded": [{"message": {"id": "m1"}}]}],
-                                                "historyId": "120"})
+    events_route.respond(
+        json={
+            "items": [
+                {
+                    "id": "e1",
+                    "summary": "Call",
+                    "start": {"dateTime": "2026-09-01T10:00:00+03:00"},
+                    "end": {"dateTime": "2026-09-01T10:30:00+03:00"},
+                    "attendees": [{"email": "x@y.com", "responseStatus": "accepted"}],
+                }
+            ],
+            "nextSyncToken": "sync-1",
+        }
+    )
+    respx.get(f"{GMAIL}/history").respond(
+        json={"history": [{"messagesAdded": [{"message": {"id": "m1"}}]}], "historyId": "120"}
+    )
 
     c = GoogleConnector(http=httpx.Client())
     page = c.sync(TOKENS, {"exclude_personal": True}, {})
@@ -69,9 +80,12 @@ def test_google_rate_limit_raises_retryable():
 
 @respx.mock
 def test_microsoft_delta_and_personal_category():
-    respx.get(url__startswith=f"{GRAPH}/me/mailFolders/inbox/messages/delta").respond(json={
-        "value": [{"id": "a"}, {"id": "b", "categories": ["Personal"]}, {"id": "c", "@removed": {}}],
-        "@odata.deltaLink": f"{GRAPH}/delta-inbox"})
+    respx.get(url__startswith=f"{GRAPH}/me/mailFolders/inbox/messages/delta").respond(
+        json={
+            "value": [{"id": "a"}, {"id": "b", "categories": ["Personal"]}, {"id": "c", "@removed": {}}],
+            "@odata.deltaLink": f"{GRAPH}/delta-inbox",
+        }
+    )
     respx.get(f"{GRAPH}/me/messages/a/$value").respond(content=RAW)
     c = MicrosoftConnector(http=httpx.Client())
     page = c.sync(TOKENS, {"folders": ["inbox"]}, {})
@@ -101,12 +115,28 @@ Paul Otieno: Let's start.
 
 @respx.mock
 def test_zoom_transcripts():
-    respx.get(url__startswith="https://api.zoom.us/v2/users/me/recordings").respond(json={"meetings": [{
-        "uuid": "abc==", "id": 99, "topic": "Founder call", "start_time": "2026-09-01T10:00:00Z", "duration": 30,
-        "recording_files": [{"file_type": "TRANSCRIPT", "download_url": "https://zoom.us/rec/download/t1"}]}]})
-    respx.get("https://zoom.us/rec/download/t1").respond(text="WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.000\nA: hi\n")
-    respx.get(url__startswith="https://api.zoom.us/v2/past_meetings/").respond(json={"participants": [
-        {"name": "A", "user_email": "a@x.io"}]})
+    respx.get(url__startswith="https://api.zoom.us/v2/users/me/recordings").respond(
+        json={
+            "meetings": [
+                {
+                    "uuid": "abc==",
+                    "id": 99,
+                    "topic": "Founder call",
+                    "start_time": "2026-09-01T10:00:00Z",
+                    "duration": 30,
+                    "recording_files": [
+                        {"file_type": "TRANSCRIPT", "download_url": "https://zoom.us/rec/download/t1"}
+                    ],
+                }
+            ]
+        }
+    )
+    respx.get("https://zoom.us/rec/download/t1").respond(
+        text="WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.000\nA: hi\n"
+    )
+    respx.get(url__startswith="https://api.zoom.us/v2/past_meetings/").respond(
+        json={"participants": [{"name": "A", "user_email": "a@x.io"}]}
+    )
     page = ZoomConnector(http=httpx.Client()).sync(TOKENS, {}, {})
     t = json.loads(page.items[0].data)
     assert t["id"] == "zoom:abc==" and t["participants"] == [{"name": "A", "email": "a@x.io"}]

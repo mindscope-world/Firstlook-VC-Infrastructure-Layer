@@ -328,7 +328,8 @@ class Resolver:
         derived = derived_company_name(domain)
         if name.strip() and name.strip() != derived:
             self.conn.execute(
-                "UPDATE companies SET name = %s WHERE id = %s AND name = %s", (name.strip(), company_id, derived)
+                "UPDATE companies SET name = %s WHERE id = %s AND name = %s",
+                (name.strip(), company_id, derived),
             )
             self.conn.execute(
                 "UPDATE entities SET canonical_name = %s, updated_at = now() WHERE id = %s AND canonical_name = %s",

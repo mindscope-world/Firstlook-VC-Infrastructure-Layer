@@ -24,8 +24,12 @@ def _worker(env, activities):
 
 @pytest.mark.integration
 async def test_sync_pages_until_done_then_stops_when_paused():
-    pages = iter([{"stored": 5, "duplicates": 0, "skipped": 1, "done": False},
-                  {"stored": 2, "duplicates": 1, "skipped": 0, "done": True}])
+    pages = iter(
+        [
+            {"stored": 5, "duplicates": 0, "skipped": 1, "done": False},
+            {"stored": 2, "duplicates": 1, "skipped": 0, "done": True},
+        ]
+    )
     statuses = iter(["active", "paused"])
 
     @activity.defn(name="account_status")
@@ -39,7 +43,8 @@ async def test_sync_pages_until_done_then_stops_when_paused():
     env = await _env()
     async with env, _worker(env, [account_status, sync_page]):
         result = await env.client.execute_workflow(
-            AccountSyncWorkflow.run, args=["t", "a", 60, 0], id=f"wf-{uuid.uuid4()}", task_queue="test")
+            AccountSyncWorkflow.run, args=["t", "a", 60, 0], id=f"wf-{uuid.uuid4()}", task_queue="test"
+        )
     assert result == {"stored": 7, "duplicates": 1, "skipped": 1, "stopped": "paused"}
 
 
@@ -59,5 +64,6 @@ async def test_auth_error_stops_workflow_without_retrying():
     env = await _env()
     async with env, _worker(env, [account_status, sync_page]):
         result = await env.client.execute_workflow(
-            AccountSyncWorkflow.run, args=["t", "a", 60, 0], id=f"wf-{uuid.uuid4()}", task_queue="test")
+            AccountSyncWorkflow.run, args=["t", "a", 60, 0], id=f"wf-{uuid.uuid4()}", task_queue="test"
+        )
     assert result["stopped"] == "AuthError" and len(calls) == 1

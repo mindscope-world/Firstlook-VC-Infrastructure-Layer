@@ -7,14 +7,25 @@ from firstlook_gateway.redaction import redact
 from firstlook_gateway.routing import cost_usd, route_for
 
 AUTH = {"Authorization": "Bearer local-dev-internal-token"}
-SCHEMA = {"type": "object", "properties": {"items": {"type": "array", "items": {"type": "string"}}},
-          "required": ["items"], "additionalProperties": False}
+SCHEMA = {
+    "type": "object",
+    "properties": {"items": {"type": "array", "items": {"type": "string"}}},
+    "required": ["items"],
+    "additionalProperties": False,
+}
 
 
 def test_redaction():
-    text, counts = redact("card 4111 1111 1111 1111, pin A123456789Z, password: hunter2, ssn 123-45-6789, "
-                          "call +254 712 345 678, email jane@acme.io")
-    assert "4111" not in text and "hunter2" not in text and "A123456789Z" not in text and "123-45-6789" not in text
+    text, counts = redact(
+        "card 4111 1111 1111 1111, pin A123456789Z, password: hunter2, ssn 123-45-6789, "
+        "call +254 712 345 678, email jane@acme.io"
+    )
+    assert (
+        "4111" not in text
+        and "hunter2" not in text
+        and "A123456789Z" not in text
+        and "123-45-6789" not in text
+    )
     assert "jane@acme.io" in text and "+254 712 345 678" in text  # kept: needed for relationships
     assert counts == {"card": 1, "kra_pin": 1, "credential": 1, "us_ssn": 1}
     # Luhn-invalid digit runs are not cards.
@@ -52,7 +63,12 @@ def test_structured_endpoint_meters_audits_and_enforces_budget(make_tenant, monk
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
     monkeypatch.setitem(gateway_app._providers, "anthropic", Stub())
     client = TestClient(gateway_app.app)
-    body = {"task": "extract.interaction", "system": "s", "user": "card 4111 1111 1111 1111", "schema": SCHEMA}
+    body = {
+        "task": "extract.interaction",
+        "system": "s",
+        "user": "card 4111 1111 1111 1111",
+        "schema": SCHEMA,
+    }
 
     assert client.post("/v1/structured", json=body).status_code == 401
     assert client.post("/v1/structured", json=body, headers=AUTH).status_code == 400  # no tenant
@@ -76,7 +92,10 @@ def test_structured_endpoint_meters_audits_and_enforces_budget(make_tenant, monk
 
 def test_embeddings_local():
     client = TestClient(gateway_app.app)
-    r = client.post("/v1/embeddings", json={"input": ["Jane Doe"]},
-                    headers={**AUTH, "X-Tenant-Id": "00000000-0000-0000-0000-000000000001"})
+    r = client.post(
+        "/v1/embeddings",
+        json={"input": ["Jane Doe"]},
+        headers={**AUTH, "X-Tenant-Id": "00000000-0000-0000-0000-000000000001"},
+    )
     assert r.status_code == 200
     assert len(r.json()["embeddings"][0]) == 1024
