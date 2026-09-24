@@ -1,0 +1,15 @@
+# Non-Claude models and embeddings. Claude calls go through the Anthropic SDK
+# inside services/gateway, not through this proxy.
+model_list:
+  - model_name: embed-default
+    litellm_params:
+      model: voyage/voyage-3.5
+      api_key: os.environ/VOYAGE_API_KEY
+  - model_name: gpt-default
+    litellm_params:
+      model: openai/gpt-5
+      api_key: os.environ/OPENAI_API_KEY
+
+litellm_settings:
+  drop_params: true
+  request_timeout: 120

@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "firstlook",
+      "credentials": [{ "accessKey": "firstlook", "secretKey": "firstlook-secret" }],
+      "actions": ["Admin", "Read", "List", "Tagging", "Write"]
+    }
+  ]
+}

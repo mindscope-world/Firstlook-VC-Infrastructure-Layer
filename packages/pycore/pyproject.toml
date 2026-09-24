@@ -1,0 +1,21 @@
+[project]
+name = "firstlook-core"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "psycopg[binary,pool]>=3.2",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "cryptography>=43",
+    "boto3>=1.35",
+    "confluent-kafka>=2.6",
+    "httpx>=0.28",
+    "pyjwt>=2.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/firstlook_core"]

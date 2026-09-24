@@ -1,0 +1,10 @@
+api:      pnpm --filter @firstlook/api dev
+web:      pnpm --filter @firstlook/web dev
+site:     pnpm --filter @firstlook/marketing dev
+ingest:   .venv/bin/uvicorn firstlook_ingest.app:app --port 14200 --reload --reload-dir services/ingest
+gateway:  .venv/bin/uvicorn firstlook_gateway.app:app --port 14300 --reload --reload-dir services/gateway
+relay:    .venv/bin/python -m firstlook_core.relay
+resolver: .venv/bin/python -m firstlook_resolver.consumer
+ai:       .venv/bin/python -m firstlook_ai.consumer
+slack:    .venv/bin/python -m firstlook_ingest.slack
+worker:   .venv/bin/python -m firstlook_workflows.worker

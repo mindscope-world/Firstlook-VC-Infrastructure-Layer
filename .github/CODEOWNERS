@@ -1,0 +1,7 @@
+# Replace @mindscope-world with the right teams once the GitHub org is set up
+# (e.g. @firstlook/platform for schema and security-sensitive paths).
+*                                   @mindscope-world
+/packages/schema/                   @mindscope-world
+/packages/pycore/src/firstlook_core/crypto.py  @mindscope-world
+/services/gateway/                  @mindscope-world
+/.github/                           @mindscope-world

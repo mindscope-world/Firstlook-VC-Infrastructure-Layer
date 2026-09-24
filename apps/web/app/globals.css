@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/* Design tokens shared with the landing page ("Hero — dawn city"). */
+@theme {
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #10131a;
+  --color-ink-soft: #262a33;
+  --color-muted: #55565e;
+  --color-faint: #8a8b93;
+  --color-line: #ebe6e1;
+  --color-panel: #ffffff;
+  --color-canvas: #f6f2ee;
+  --color-brand: #e7893a;       /* Firstlook orange */
+  --color-brand-deep: #c96f24;
+  --color-brand-soft: #fbead9;
+  --color-dusk: #2a2732;        /* skyline towers */
+  --color-mauve: #ad9ca3;
+  --color-peach: #f7dcc6;
+  --color-sky: #d4e1ee;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  color: var(--color-ink);
+  /* The hero's dawn sky, softened for long reading sessions. */
+  background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(212, 225, 238, 0.75), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(247, 220, 198, 0.55), transparent 60%),
+    var(--color-canvas);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.display {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variation-settings: "opsz" 14;
+}
+
+mark.cite {
+  background: #fde0c4;
+  box-shadow: 0 0 0 2px #fde0c4;
+  border-radius: 3px;
+  color: inherit;
+}
