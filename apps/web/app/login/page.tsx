@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { api, useApi } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { api, ApiError, useApi } from "@/lib/api";
 
 const SEEDED = ["paul@savanna.vc", "amani@savanna.vc", "grace@savanna.vc", "tom@savanna.vc", "lena@harbor.capital"];
 
@@ -12,13 +12,28 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  // The marketing site hands off with ?email=...
+  useEffect(() => {
+    const handed = new URLSearchParams(window.location.search).get("email");
+    if (handed) setEmail(handed);
+  }, []);
+
   async function devLogin(address: string) {
     setError(null);
     try {
       await api("/auth/dev-login", { method: "POST", json: { email: address } });
       router.push("/");
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      const status = e instanceof ApiError ? e.status : 0;
+      setError(
+        status === 404
+          ? `No user with the email ${address}. Sign-in doesn't send email links: in development, use one of the seeded users below (run make seed), or add yourself as a user.`
+          : status === 0 || status >= 500
+            ? "Couldn't reach the Firstlook API. Is `make dev` running?"
+            : e instanceof Error
+              ? e.message
+              : String(e),
+      );
     }
   }
 
@@ -46,6 +61,7 @@ export default function LoginPage() {
               }}
             >
               <label className="block text-xs font-medium text-muted">Development sign-in</label>
+              <p className="text-xs text-muted">Signs you in immediately as an existing user. No email is sent.</p>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

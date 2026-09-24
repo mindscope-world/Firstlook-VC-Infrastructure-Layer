@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { X, Lock, ArrowRight, CheckCircle2, Shield } from 'lucide-react';
+import { X, ArrowRight, Shield } from 'lucide-react';
+
+// The product app's sign-in page. Sign-in happens there (dev login locally,
+// WorkOS SSO when configured); this modal only hands off to it.
+const APP_URL = (import.meta.env.VITE_APP_URL as string | undefined) ?? 'http://localhost:13000';
+
+function goToApp(email?: string) {
+  const url = new URL('/login', APP_URL);
+  if (email) url.searchParams.set('email', email);
+  window.location.href = url.toString();
+}
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -8,13 +18,12 @@ interface LoginModalProps {
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    goToApp(email);
   };
 
   return (
@@ -38,7 +47,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
         {/* Content */}
         <div className="p-6">
-          {!sent ? (
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-bold text-neutral-900 tracking-tight">
@@ -53,7 +61,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <div className="space-y-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setSent(true)}
+                  onClick={() => goToApp()}
                   className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-300 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <span className="font-bold text-blue-600">G</span>
@@ -61,7 +69,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSent(true)}
+                  onClick={() => goToApp()}
                   className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-300 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <span className="font-bold text-blue-500">M</span>
@@ -69,7 +77,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSent(true)}
+                  onClick={() => goToApp()}
                   className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-50 border border-neutral-300 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <span className="font-bold text-neutral-900">O</span>
@@ -103,7 +111,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   type="submit"
                   className="w-full py-3 px-4 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2"
                 >
-                  <span>Send Magic Login Link</span>
+                  <span>Continue to sign in</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </form>
@@ -113,28 +121,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 <span>Protected by firm-specific biometric and 2FA policies</span>
               </div>
             </div>
-          ) : (
-            <div className="text-center py-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <h4 className="text-lg font-bold text-neutral-900 mb-1">
-                Authentication Link Dispatched
-              </h4>
-              <p className="text-xs text-neutral-600 mb-6">
-                If your firm has an active Firstlook enclave, check your inbox to access your investment dashboard.
-              </p>
-              <button
-                onClick={() => {
-                  setSent(false);
-                  onClose();
-                }}
-                className="w-full py-2.5 rounded-full bg-neutral-900 text-white text-xs font-semibold"
-              >
-                Close
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
