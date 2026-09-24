@@ -33,6 +33,7 @@ dev = [
     "pytest-asyncio>=0.24",
     "respx>=0.22",
     "ruff>=0.13",
+    "honcho>=2.0",
     "firstlook-core",
     "firstlook-fixtures",
     "firstlook-ingest",

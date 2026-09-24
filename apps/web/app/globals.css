@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-panel: #ffffff;
+  --color-canvas: #f8fafc;
+  --color-brand: #0f766e;
+  --color-brand-soft: #ccfbf1;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+mark.cite {
+  background: #fef08a;
+  border-radius: 2px;
+  padding: 0 1px;
+}

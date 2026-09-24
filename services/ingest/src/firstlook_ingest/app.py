@@ -98,7 +98,7 @@ def list_accounts(p: User) -> list[dict[str, Any]]:
         rows = conn.execute(
             "SELECT id, provider, account_email::text AS account_email, status, last_error, last_synced_at, settings,"
             " created_at, (SELECT count(*) FROM sources s WHERE s.connector_account_id = ca.id) AS items"
-            " FROM connector_accounts ca WHERE user_id = %s ORDER BY created_at",
+            " FROM connector_accounts ca WHERE user_id = %s AND provider <> 'fixture' ORDER BY created_at",
             (str(p.user_id),),
         ).fetchall()
     return rows

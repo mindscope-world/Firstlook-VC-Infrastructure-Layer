@@ -1,0 +1,19 @@
+display_information:
+  name: Firstlook
+  description: Relationship intelligence from your fund's graph
+features:
+  bot_user:
+    display_name: Firstlook
+  slash_commands:
+    - command: /firstlook
+      url: https://YOUR-TUNNEL.example/api/slack/commands
+      description: Look up a company or person
+      usage_hint: "<company or person>"
+oauth_config:
+  redirect_urls:
+    - https://YOUR-TUNNEL.example/api/ingest/slack/callback
+  scopes:
+    bot: [commands, chat:write, channels:read, groups:read]
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false

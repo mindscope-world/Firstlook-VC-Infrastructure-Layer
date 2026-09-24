@@ -47,6 +47,12 @@ services:
     volumes:
       - s3-data:/data
       - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    # Buckets created before the filer is up end up half-registered, so
+    # `make up` waits for this before anything writes.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8888/ && wget -q -O /dev/null http://127.0.0.1:8333/status"]
+      interval: 3s
+      retries: 40
 
   redpanda:
     <<: *restart

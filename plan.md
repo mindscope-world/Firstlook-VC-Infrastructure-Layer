@@ -115,24 +115,26 @@ Durations are indicative. Phases 0–3 build the application. Phase 4 deploys it
 
 **Goal:** a developer can run the whole stack locally, connect their own Gmail or Outlook account, and see interactions resolved into a tenant-isolated graph.
 
+Status as of 2026-09-25 (branch `phase-0-foundations`): `[x]` means built and tested in the repo, `[~]` means partly done, `[ ]` means not started. The notes say what is left.
+
 Week 1–2 (setup)
-- [ ] Commit the pending `package.json`/lockfile. Restructure into the monorepo (`apps/marketing`). Confirm the marketing site still builds.
-- [ ] Write ADRs for every choice in §3.
-- [ ] Set up the GitHub org: branch protection, CODEOWNERS, Renovate, secret scanning, CI skeleton (lint, typecheck, test, build, container scan).
-- [ ] `compose/docker-compose.yml` with Postgres+pgvector, Redis, MinIO, Redpanda, Temporal, ClickHouse, LiteLLM, Langfuse, and a Grafana/OTel collector. Add `make dev` and `make seed`.
-- [ ] Start **long-lead external processes** that don't need production infrastructure (see §8): data-vendor quotes, design-partner agreements, model-vendor zero-data-retention terms.
+- [x] Commit the pending `package.json`/lockfile. Restructure into the monorepo (`apps/marketing`). Confirm the marketing site still builds.
+- [x] Write ADRs for every choice in §3 (`docs/adr/0001`–`0006`).
+- [~] Set up the GitHub org: branch protection, CODEOWNERS, Renovate, secret scanning, CI skeleton (lint, typecheck, test, build, container scan). *CODEOWNERS, Renovate and CI (including gitleaks and Trivy) are in the repo. Branch protection, org secret scanning and real team handles in CODEOWNERS are GitHub settings someone must apply.*
+- [x] `compose/docker-compose.yml` with Postgres+pgvector, Redis, S3 storage, Redpanda, Temporal, ClickHouse, LiteLLM, Langfuse, and Grafana/OTel. Add `make dev` and `make seed`. *SeaweedFS replaces MinIO, which no longer publishes images (ADR 0004).*
+- [ ] Start **long-lead external processes** that don't need production infrastructure (see §8): data-vendor quotes, design-partner agreements, model-vendor zero-data-retention terms. *Business tasks; not code.*
 
 Weeks 3–8 (build)
-- [ ] `packages/schema` v1 with RLS policies and tests proving that tenant A cannot read tenant B.
-- [ ] `packages/adapters`: storage, bus, KMS (envelope encryption with per-tenant data keys), OCR, email. Each has a local implementation and a contract test suite that later cloud implementations must also pass.
-- [ ] Auth: WorkOS dev environment + Google/Microsoft login, RBAC, deal-level ACLs in `services/api`.
-- [ ] Ingestion framework: connector interface (`auth → backfill → incremental sync → webhook`), raw-to-object-store-to-bus event contract, Temporal workflows for backfill with rate-limit-aware retries.
-- [ ] Connectors: **Gmail + Google Calendar**, **Microsoft Graph mail + calendar**, using test-mode OAuth apps. Use polling locally and add push webhooks behind a tunnel (e.g. ngrok) for testing. Mailbox/label selection UI with personal-email exclusion by default.
-- [ ] LLM gateway: LiteLLM proxy, per-tenant keys and budgets, request/response audit logging, PII redaction hook, Langfuse tracing.
-- [ ] `packages/fixtures`: a synthetic fund with people, companies, email threads, decks and KPIs, so every feature can be demoed without real data.
-- [ ] Minimal `apps/web`: login, connect accounts, see a list of synced interactions and people.
+- [x] `packages/schema` v1 with RLS policies and tests proving that tenant A cannot read tenant B.
+- [x] Adapters (in `firstlook_core.adapters`): storage, bus, KMS (envelope encryption with per-tenant data keys), OCR, email. Each has a local implementation and a contract test suite that later cloud implementations must also pass.
+- [~] Auth: WorkOS dev environment + Google/Microsoft login, RBAC, deal-level ACLs in `services/api`. *Dev login, RBAC and deal-level/private ACLs are done and tested. The WorkOS AuthKit flow is written but untested against a real WorkOS environment.*
+- [x] Ingestion framework: connector interface (`auth → backfill → incremental sync`), raw-to-object-store-to-bus event contract (transactional outbox), Temporal workflows for backfill with rate-limit-aware retries. *Push webhooks are not built; sync polls every 5 minutes.*
+- [~] Connectors: **Gmail + Google Calendar**, **Microsoft Graph mail + calendar**, using test-mode OAuth apps. Mailbox/label selection UI with personal-email exclusion by default. *Tested against mocked provider APIs only. Not yet run against a real mailbox: that needs OAuth client IDs in `.env` (docs/connectors.md).*
+- [x] LLM gateway: per-tenant budgets, request/response audit logging, PII redaction, Langfuse tracing. Claude runs through the Anthropic SDK with LiteLLM for other providers (ADR 0005).
+- [~] `packages/fixtures`: a synthetic fund with people, companies, email threads, a deck, meetings, a transcript and CRM exports. *KPIs are left for Phase 2.*
+- [x] Minimal `apps/web`: login, connect accounts, synced interactions and people (plus the 1a screens below).
 
-**Exit gate:** `make dev && make seed` brings up a working stack on a clean machine. A team member's own mailbox syncs into the graph. The RLS isolation suite is green in CI.
+**Exit gate:** `make dev && make seed` brings up a working stack on a clean machine. A team member's own mailbox syncs into the graph. The RLS isolation suite is green in CI. *Seed, the stack and RLS tests work locally. The real-mailbox check and a first CI run on GitHub are still to do.*
 
 ---
 
@@ -141,12 +143,12 @@ Weeks 3–8 (build)
 **Goal:** the three MVP modules work end to end on synthetic data and the team's own data, and design partners have validated them through demos.
 
 **1a. Relationship intelligence (auto-CRM)**
-- [ ] Parser pipeline: MIME/HTML cleanup, signature and quoted-thread stripping, attachment extraction.
-- [ ] Entity resolution v1: deterministic rules (email, domain, registry ID), then embedding + name similarity with confidence scores. Low-confidence matches go to a **review queue UI**.
-- [ ] LLM extraction of intros, next steps and deal mentions using JSON-schema outputs, with validation and citations back to message IDs.
-- [ ] Relationship strength score (recency, frequency, reciprocity), plus team-wide "warm path" queries over `edges`.
-- [ ] Zoom/Meet transcript connector. CRM migration importers: **Affinity, HubSpot, Salesforce, Airtable** (CSV + API).
-- [ ] Slack app v1 (dev workspace): deal channel notifications, `/firstlook <company>` lookup.
+- [x] Parser pipeline: MIME/HTML cleanup, signature and quoted-thread stripping, attachment extraction (stored encrypted), signature enrichment of titles.
+- [x] Entity resolution v1: deterministic rules (email, domain, registry ID, CRM ID), then embedding + name similarity with confidence scores. Low-confidence matches go to a **review queue UI** (merge / distinct).
+- [x] LLM extraction of intros, next steps and deal mentions using JSON-schema outputs, with validation and verbatim citations back to message IDs and character offsets. Accepting an item is what writes to the graph (ADR 0006). *Only checked against golden fixture output. It has not yet run against a live model with an eval score (`make seed-llm` is the entry point).*
+- [x] Relationship strength score (recency, frequency, reciprocity), plus team-wide "warm path" queries over `edges` (`warm_paths()` in SQL).
+- [~] Zoom/Meet transcript connector. CRM migration importers: **Affinity, HubSpot, Salesforce, Airtable** (CSV + API). *CSV import is tested. API importers and transcript connectors are tested only against mocked APIs or not at all.*
+- [~] Slack app v1 (dev workspace): deal channel notifications, `/firstlook <company>` lookup. *Signature verification and lookup are tested. Not yet installed in a real workspace.*
 
 **1b. Deal sourcing and scoring**
 - [ ] Thesis editor: structured filters (sector, stage, geo, cheque size) plus a free-text description, versioned per fund.
