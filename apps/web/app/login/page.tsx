@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, ApiError, useApi } from "@/lib/api";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:13001";
 const SEEDED = ["paul@savanna.vc", "amani@savanna.vc", "grace@savanna.vc", "tom@savanna.vc", "lena@harbor.capital"];
 
 export default function LoginPage() {
@@ -12,10 +13,26 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // The marketing site hands off with ?email=...
+  const [checking, setChecking] = useState(true);
+
+  // Already signed in: go straight to the app. Coming from the landing page
+  // with ?email=..., sign in with it right away.
   useEffect(() => {
     const handed = new URLSearchParams(window.location.search).get("email");
-    if (handed) setEmail(handed);
+    fetch("/api/me", { credentials: "same-origin" })
+      .then((r) => {
+        if (r.ok) {
+          router.replace("/");
+          return;
+        }
+        if (handed) {
+          setEmail(handed);
+          void devLogin(handed);
+        }
+        setChecking(false);
+      })
+      .catch(() => setChecking(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function devLogin(address: string) {
@@ -27,7 +44,7 @@ export default function LoginPage() {
       const status = e instanceof ApiError ? e.status : 0;
       setError(
         status === 404
-          ? `No user with the email ${address}. Sign-in doesn't send email links: in development, use one of the seeded users below (run make seed), or add yourself as a user.`
+          ? `No user with the email ${address}. Add yourself with: make add-user EMAIL=${address} NAME="Your Name". Or pick a seeded user below.`
           : status === 0 || status >= 500
             ? "Couldn't reach the Firstlook API. Is `make dev` running?"
             : e instanceof Error
@@ -37,8 +54,12 @@ export default function LoginPage() {
     }
   }
 
+  if (checking) {
+    return <div className="flex min-h-screen items-center justify-center text-sm text-muted">Signing in…</div>;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
       <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-8 shadow-sm">
         <h1 className="text-xl font-semibold">
           first<span className="text-brand">look</span>
@@ -88,6 +109,9 @@ export default function LoginPage() {
         {error && <p className="mt-4 rounded-lg bg-rose-50 p-2 text-sm text-rose-800">{error}</p>}
         {cfg && !cfg.devLogin && !cfg.sso && <p className="mt-6 text-sm text-muted">No sign-in method is configured.</p>}
       </div>
+      <a href={SITE_URL} className="text-xs text-muted hover:text-ink">
+        ← Back to firstlook site
+      </a>
     </div>
   );
 }

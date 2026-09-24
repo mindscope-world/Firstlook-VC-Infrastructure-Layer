@@ -53,7 +53,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   Sign in to your firm's enclave
                 </h3>
                 <p className="text-xs text-neutral-600 mt-1">
-                  Authenticate via your firm's Single Sign-On (SSO) or work email.
+                  Sign in with your firm's SSO or your work email. You'll go straight to your Firstlook workspace.
                 </p>
               </div>
 

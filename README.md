@@ -13,12 +13,12 @@ make seed    # two synthetic funds; no API key needed
 make dev     # every service with reload
 ```
 
-Open http://localhost:13000 and sign in as `paul@savanna.vc` (dev login). To run real extraction instead of the fixtures' golden answers, set `ANTHROPIC_API_KEY` in `.env` and run `make seed-llm`. To connect your own mailbox, see [docs/connectors.md](docs/connectors.md).
+The landing page is http://localhost:13001 and the app is http://localhost:13000. Sign in as `paul@savanna.vc`, or add yourself with `make add-user EMAIL=you@fund.vc NAME="Your Name"`. To run real extraction instead of the fixtures' golden answers, set `ANTHROPIC_API_KEY` in `.env` and run `make seed-llm`. To connect your own mailbox, see [docs/connectors.md](docs/connectors.md).
 
 ## Layout
 
 ```
-apps/marketing        Vite landing page (unchanged)
+apps/marketing        Vite landing page; "Log in" hands off to the app
 apps/web              Next.js product UI; proxies /api/* to the services
 services/api          TypeScript (Fastify) API: graph, review queue, extractions, deals, Slack command
 services/ingest       Python: OAuth connectors, sync, CRM import, Slack install + notifications
@@ -53,4 +53,4 @@ make up && make test   # Python (pytest) + TypeScript (vitest); DB tests use the
 make lint
 ```
 
-Ports (local): web 13000, api 14100, ingest 14200, gateway 14300, Postgres 15432, S3 18333, Kafka 19092, Temporal 17233 (UI 18233), ClickHouse 18123, Mailpit 18025, Langfuse 13100, Grafana 13300.
+Ports (local): web 13000, landing page 13001, api 14100, ingest 14200, gateway 14300, Postgres 15432, S3 18333, Kafka 19092, Temporal 17233 (UI 18233), ClickHouse 18123, Mailpit 18025, Langfuse 13100, Grafana 13300.

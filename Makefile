@@ -1,7 +1,7 @@
 # Firstlook local development. Run `make help` for targets.
 COMPOSE := docker compose -f compose/docker-compose.yml --env-file .env
 
-.PHONY: help setup up up-full down dev seed seed-llm migrate test test-py test-ts lint fmt build logs reset
+.PHONY: help setup up up-full down dev seed seed-llm migrate add-user test test-py test-ts lint fmt build logs reset
 
 help:
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -30,6 +30,10 @@ seed: migrate ## Load the synthetic funds with golden extractions (no model call
 
 seed-llm: migrate ## Load the synthetic funds, extracting through the LLM gateway (needs ANTHROPIC_API_KEY)
 	uv run python -m firstlook_fixtures.seed --reset --llm gateway
+
+add-user: ## Add a user who can sign in: make add-user EMAIL=you@fund.vc NAME="Your Name" [ROLE=admin] [TENANT=savanna]
+	@test -n "$(EMAIL)" -a -n "$(NAME)" || (echo 'usage: make add-user EMAIL=you@fund.vc NAME="Your Name" [ROLE=admin] [TENANT=savanna]' && exit 1)
+	uv run python -m firstlook_core.admin add-user --email "$(EMAIL)" --name "$(NAME)" --role "$(or $(ROLE),admin)" --tenant "$(or $(TENANT),savanna)"
 
 dev: up ## Infrastructure + every service with reload (web on http://localhost:13000)
 	uv run honcho -f Procfile.dev start

@@ -48,6 +48,7 @@ export function Shell({ children }: { children: ReactNode }) {
   async function logout() {
     await api("/auth/logout", { method: "POST" });
     router.push("/login");
+    router.refresh();
   }
 
   return (
