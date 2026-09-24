@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Play, CheckCircle2, ChevronRight, FileText, Users, AlertTriangle, Shield } from 'lucide-react';
+import { LogoMark } from './Logo';
 
 interface WatchDemoModalProps {
   isOpen: boolean;
@@ -98,9 +99,7 @@ export const WatchDemoModal: React.FC<WatchDemoModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-neutral-200 bg-[#FAF8F5]">
           <div className="flex items-center gap-2">
-            <span className="relative flex items-center justify-center w-5 h-5 rounded-full border-[2.2px] border-[#F97316]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            </span>
+            <LogoMark />
             <span className="font-bold text-sm text-neutral-900">
               Interactive Product Walkthrough
             </span>

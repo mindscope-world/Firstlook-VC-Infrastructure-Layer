@@ -88,9 +88,9 @@ function AccountRow({ a, onChange }: { a: Account; onChange: () => void }) {
           </Button>
         </span>
       </div>
-      {a.last_error && <p className="mt-1 text-xs text-rose-700">{a.last_error}</p>}
+      {a.last_error && <p className="mt-1 text-xs text-[#a33a2c]">{a.last_error}</p>}
       {open && (
-        <div className="mt-3 space-y-3 rounded-lg bg-slate-50 p-3 text-sm">
+        <div className="mt-3 space-y-3 rounded-2xl bg-[#f7f4f0] p-4 text-sm">
           {mailbox && (
             <div>
               <p className="text-xs font-medium text-muted">
@@ -104,7 +104,7 @@ function AccountRow({ a, onChange }: { a: Account; onChange: () => void }) {
                     <button
                       key={l.id}
                       onClick={() => setSelected(on ? selected.filter((x) => x !== value) : [...selected, value])}
-                      className={`rounded-full border px-2 py-0.5 text-xs ${on ? "border-brand bg-brand-soft" : "border-line bg-white"}`}
+                      className={`rounded-full border px-2 py-0.5 text-xs ${on ? "border-brand bg-brand-soft text-brand-deep" : "border-line bg-white"}`}
                     >
                       {l.name}
                     </button>
@@ -120,7 +120,7 @@ function AccountRow({ a, onChange }: { a: Account; onChange: () => void }) {
           </label>
           <label className="flex items-center gap-2">
             Visible to
-            <select value={visibility} onChange={(e) => setVisibility(e.target.value as "team" | "private")} className="rounded border border-line bg-white px-2 py-1">
+            <select value={visibility} onChange={(e) => setVisibility(e.target.value as "team" | "private")} className="rounded-full border border-line bg-white px-3 py-1">
               <option value="team">the whole team</option>
               <option value="private">only me</option>
             </select>
@@ -159,13 +159,13 @@ function CrmImport() {
         Upload a CSV export from Affinity, HubSpot, Salesforce or Airtable. Records go through entity resolution, so re-importing updates instead of duplicating.
       </p>
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <select value={vendor} onChange={(e) => setVendor(e.target.value)} className="rounded-lg border border-line px-2 py-1.5">
+        <select value={vendor} onChange={(e) => setVendor(e.target.value)} className="rounded-full border border-line bg-white px-3 py-2">
           <option value="hubspot">HubSpot</option>
           <option value="affinity">Affinity</option>
           <option value="salesforce">Salesforce</option>
           <option value="airtable">Airtable</option>
         </select>
-        <select value={objectType} onChange={(e) => setObjectType(e.target.value)} className="rounded-lg border border-line px-2 py-1.5">
+        <select value={objectType} onChange={(e) => setObjectType(e.target.value)} className="rounded-full border border-line bg-white px-3 py-2">
           <option value="">Detect contents</option>
           <option value="people">People</option>
           <option value="companies">Companies</option>
@@ -190,8 +190,8 @@ export default function ConnectionsPage() {
   return (
     <>
       <PageHeader title="Connections" subtitle="Connect your own mailbox, calendar and call recordings. You choose what gets synced." />
-      {params?.get("connected") && <p className="mb-4 rounded-lg bg-emerald-50 p-2 text-sm text-emerald-800">Connected. The first sync has started.</p>}
-      {params?.get("error") && <p className="mb-4 rounded-lg bg-rose-50 p-2 text-sm text-rose-800">Connection failed: {params.get("error")}</p>}
+      {params?.get("connected") && <p className="mb-4 rounded-2xl bg-[#e5f0e8] px-4 py-2.5 text-sm text-[#2f6b45]">Connected. The first sync has started.</p>}
+      {params?.get("error") && <p className="mb-4 rounded-2xl bg-[#fbe3df] px-4 py-2.5 text-sm text-[#a33a2c]">Connection failed: {params.get("error")}</p>}
       <div className="space-y-6">
         <Card title="Add a connection">
           {!providers.data ? (
@@ -199,10 +199,10 @@ export default function ConnectionsPage() {
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
               {providers.data.map((p) => (
-                <div key={p.provider} className="flex items-center justify-between rounded-lg border border-line p-3 text-sm">
+                <div key={p.provider} className="flex items-center justify-between rounded-2xl border border-line p-4 text-sm">
                   <span>{p.label}</span>
                   {p.configured ? (
-                    <a href={`/api/ingest/connectors/${p.provider}/start`} className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white">
+                    <a href={`/api/ingest/connectors/${p.provider}/start`} className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft">
                       Connect
                     </a>
                   ) : (

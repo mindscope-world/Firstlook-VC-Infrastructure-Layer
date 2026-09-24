@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ArrowRight, Shield } from 'lucide-react';
+import { LogoMark } from './Logo';
 
 // The product app's sign-in page. Sign-in happens there (dev login locally,
 // WorkOS SSO when configured); this modal only hands off to it.
@@ -32,9 +33,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-neutral-200">
           <div className="flex items-center gap-2">
-            <span className="relative flex items-center justify-center w-5 h-5 rounded-full border-[2.2px] border-[#F97316]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            </span>
+            <LogoMark />
             <span className="font-extrabold text-lg text-neutral-900">Firstlook Portal</span>
           </div>
           <button

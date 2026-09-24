@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Wordmark } from './Logo';
 
 interface NavbarProps {
   onBookDemo: () => void;
@@ -29,65 +30,48 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookDemo, onLogin }) => {
   return (
     <>
       <header
-        className={`fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300 ${
-          isScrolled ? 'top-3 shadow-[0_8px_30px_rgba(0,0,0,0.08)]' : 'shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+        className={`fixed left-1/2 z-50 w-[calc(100%-32px)] max-w-[860px] -translate-x-1/2 transition-all duration-300 ${
+          isScrolled ? 'top-3' : 'top-[30px]'
         }`}
       >
-        <div className="bg-[#FAF8F5]/90 backdrop-blur-md border border-[#E5E2DC] rounded-full px-4 sm:px-5 py-2.5 flex items-center justify-between">
-          {/* Brand Wordmark with Firstlook target logo */}
-          <a
-            href="#"
-            className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-full group"
-          >
-            {/* Orange circular aperture / target icon from PDF */}
-            <span className="relative flex items-center justify-center w-5 h-5 rounded-full border-[2.2px] border-[#F97316] group-hover:scale-105 transition-transform">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]"></span>
-            </span>
-            <span className="font-extrabold text-[17px] tracking-tight text-[#111317]">
-              Firstlook
-            </span>
+        <div className="flex h-[64px] items-center justify-between rounded-full bg-[#FBFCFD]/95 pl-6 pr-2.5 shadow-[0_12px_40px_rgba(16,19,26,0.08),0_1px_2px_rgba(16,19,26,0.04)] backdrop-blur-md">
+          <a href="#" className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E7893A]">
+            <Wordmark />
           </a>
 
-          {/* Navigation links (Desktop) */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-7">
-            {navLinks.map((link) => (
+          <nav className="hidden md:flex items-center gap-[30px]">
+            {navLinks.map((link, i) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-neutral-600 hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-sm"
+                className={`text-[16px] font-medium transition-colors hover:text-[#10131A] ${
+                  i === 0 ? 'text-[#10131A]' : 'text-[#55565e]'
+                }`}
               >
                 {link.label}
               </a>
             ))}
           </nav>
 
-          {/* Actions: Log in + Book a demo */}
-          <div className="hidden sm:flex items-center gap-3">
-            <button
-              onClick={onLogin}
-              className="text-sm font-medium text-neutral-700 hover:text-neutral-950 px-2.5 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-full"
-            >
+          <div className="hidden sm:flex items-center gap-5">
+            <button onClick={onLogin} className="text-[16px] font-medium text-[#10131A] hover:opacity-70">
               Log in
             </button>
             <button
               onClick={onBookDemo}
-              className="bg-[#101216] hover:bg-[#232731] text-white text-sm font-medium px-4.5 py-2 rounded-full transition-all duration-200 shadow-sm hover:shadow active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 whitespace-nowrap"
+              className="h-[46px] rounded-full bg-[#10131A] px-6 text-[16px] font-medium text-white transition hover:bg-[#262a33] active:scale-95"
             >
               Book a demo
             </button>
           </div>
 
-          {/* Mobile hamburger button */}
           <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={onBookDemo}
-              className="bg-[#101216] text-white text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap"
-            >
+            <button onClick={onBookDemo} className="rounded-full bg-[#10131A] px-3.5 py-2 text-xs font-medium text-white">
               Demo
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 text-neutral-700 hover:text-neutral-900 rounded-full hover:bg-neutral-200/60 transition-colors"
+              className="rounded-full p-1.5 text-neutral-700 hover:bg-neutral-200/60"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

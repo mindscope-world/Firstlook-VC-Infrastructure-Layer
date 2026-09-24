@@ -25,7 +25,7 @@ interface Candidate {
 
 function SideCard({ side, label }: { side: Side; label: string }) {
   return (
-    <div className="flex-1 rounded-lg border border-line p-3">
+    <div className="flex-1 rounded-2xl border border-line p-4">
       <p className="text-xs uppercase text-muted">{label}</p>
       <p className="mt-1 font-medium">
         <EntityLink type="person" id={side.id}>
@@ -67,7 +67,7 @@ export default function ReviewPage() {
         title="Review queue"
         subtitle="Possible duplicates that entity resolution wasn't confident enough to merge on its own."
       />
-      {err && <p className="mb-4 rounded-lg bg-rose-50 p-2 text-sm text-rose-800">{err}</p>}
+      {err && <p className="mb-4 rounded-2xl bg-[#fbe3df] px-4 py-2.5 text-sm text-[#a33a2c]">{err}</p>}
       {!data ? (
         <Loading error={error} />
       ) : data.length === 0 ? (

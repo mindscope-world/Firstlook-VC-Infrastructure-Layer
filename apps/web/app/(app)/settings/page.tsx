@@ -48,14 +48,14 @@ function SlackCard({ admin }: { admin: boolean }) {
                 }
               }}
             >
-              <input value={channel} onChange={(e) => setChannel(e.target.value)} placeholder="Channel ID, e.g. C0123ABCD" className="w-56 rounded-lg border border-line px-3 py-1.5" />
+              <input value={channel} onChange={(e) => setChannel(e.target.value)} placeholder="Channel ID, e.g. C0123ABCD" className="w-56 rounded-full border border-line bg-white px-4 py-2 outline-none focus:border-brand" />
               <Button type="submit">Set deal channel</Button>
             </form>
           )}
           {note && <p className="text-xs text-muted">{note}</p>}
         </div>
       ) : admin ? (
-        <a href="/api/ingest/slack/install" className="inline-block rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white">
+        <a href="/api/ingest/slack/install" className="inline-block rounded-full bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft">
           Add to Slack
         </a>
       ) : (

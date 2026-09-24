@@ -60,7 +60,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         }
       />
       {data.pending_review.length > 0 && (
-        <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+        <p className="mb-4 rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand-deep">
           This person may be a duplicate. <Link href="/review" className="underline">Review it</Link>.
         </p>
       )}

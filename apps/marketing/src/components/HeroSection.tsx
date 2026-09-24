@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Play, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CirclePlay } from 'lucide-react';
 import { HeroSkyline } from './HeroSkyline';
 
 interface HeroSectionProps {
@@ -8,85 +8,67 @@ interface HeroSectionProps {
   onApplyDesignPartner: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({
-  onBookDemo,
-  onWatchDemo,
-  onApplyDesignPartner,
-}) => {
-  const scrollToProblem = () => {
-    const el = document.getElementById('problem');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+// Matches "Hero — dawn city": dawn sky, one-line display headline, two-line
+// subhead, and the pixel city along the bottom half.
+export const HeroSection: React.FC<HeroSectionProps> = ({ onBookDemo, onWatchDemo, onApplyDesignPartner }) => {
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section className="relative min-h-[92vh] pt-32 sm:pt-36 md:pt-40 flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#FAF8F5] via-[#EFECE5] to-[#12141A]">
-      {/* Subtle radial ambient highlight behind headline */}
+    <section
+      className="relative h-[100svh] min-h-[680px] max-h-[1100px] overflow-hidden"
+      style={{
+        background:
+          'linear-gradient(180deg, #d4e1ee 0%, #e2e8ef 18%, #eceef2 30%, #f3efec 47%, #f7e9dc 60%, #f7dcc6 78%, #f4d4bc 100%)',
+      }}
+    >
+      {/* Soft light behind the headline */}
       <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-amber-200/25 blur-[120px] rounded-full pointer-events-none"
+        className="pointer-events-none absolute left-1/2 top-[40%] h-[46%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/45 blur-[90px]"
         aria-hidden="true"
       />
 
-      {/* Main Hero Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center flex flex-col items-center">
-        {/* Onboarding design partner pill tag from PDF */}
+      <div className="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center px-6 pt-[max(120px,27.5vh)] text-center">
         <button
           onClick={onApplyDesignPartner}
-          className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/75 hover:bg-white border border-neutral-300/80 hover:border-amber-400/80 text-xs sm:text-sm font-medium text-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-md transition-all duration-200 hover:scale-[1.02] cursor-pointer mb-7 sm:mb-8"
+          className="group inline-flex items-center gap-2.5 whitespace-nowrap rounded-full border border-white bg-white/80 py-2 pl-4 pr-3.5 text-[13px] sm:text-[15px] font-medium text-[#1a1b22] shadow-[0_1px_3px_rgba(16,19,26,0.06)] backdrop-blur transition hover:bg-white"
         >
-          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-          <span>Now onboarding design-partner funds</span>
-          <span className="text-neutral-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all">
-            →
-          </span>
+          <span className="h-2 w-2 rounded-full bg-[#E7893A]" />
+          Now onboarding design-partner funds
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
         </button>
 
-        {/* Headline strictly following the PDF page 1 display typography */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-extrabold text-[#111317] tracking-tight leading-[1.06] mb-6 text-balance">
+        <h1
+          className="mt-[clamp(20px,3.2vh,34px)] text-[clamp(50px,7.6vw,110px)] font-extrabold leading-[0.98] tracking-[-0.055em] text-[#111318]"
+          style={{ fontVariationSettings: "'opsz' 14" }}
+        >
           See the deal first.
-          <span className="block text-[#3B404D] font-bold text-4xl sm:text-5xl md:text-6xl mt-2">
-            Close it faster.
-          </span>
         </h1>
 
-        {/* Subheadline matching both PDF and copy brief */}
-        <p className="max-w-2xl text-lg sm:text-xl text-neutral-600 font-normal leading-relaxed mb-8 sm:mb-10 text-balance">
-          The AI infrastructure layer for venture firms. Sourcing, diligence and portfolio intelligence in one place. Firstlook unifies your relationships, deal flow and portfolio data into one intelligent graph.
+        <p className="mt-[clamp(24px,4.2vh,44px)] text-[clamp(17px,1.55vw,22px)] leading-[1.62] text-[#2f3038]">
+          The AI infrastructure layer for venture firms.
+          <br />
+          Sourcing, diligence and portfolio intelligence in one place.
         </p>
 
-        {/* Action Buttons from PDF */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto mb-8">
+        <div className="mt-[clamp(24px,4.2vh,44px)] flex items-center gap-5 sm:gap-8 whitespace-nowrap">
           <button
             onClick={onBookDemo}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-neutral-50 text-[#111317] font-semibold text-sm sm:text-base border border-neutral-300/80 shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            className="inline-flex h-[50px] sm:h-[54px] items-center gap-3 rounded-full bg-white px-6 sm:px-7 text-[16px] sm:text-[17px] font-semibold text-[#10131A] shadow-[0_10px_30px_rgba(16,19,26,0.08),0_1px_2px_rgba(16,19,26,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(16,19,26,0.12)]"
           >
-            <span>Book a demo</span>
-            <ArrowRight className="w-4 h-4 text-neutral-700" />
+            Book a demo
+            <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
           </button>
-
           <button
             onClick={onWatchDemo}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/40 hover:bg-white/70 text-neutral-800 font-medium text-sm sm:text-base border border-neutral-300/60 backdrop-blur-md flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            className="inline-flex items-center gap-2.5 text-[16px] sm:text-[17px] font-semibold text-[#10131A] transition hover:opacity-70"
           >
-            <div className="w-5 h-5 rounded-full bg-neutral-900/10 flex items-center justify-center text-neutral-800">
-              <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
-            </div>
-            <span>Watch demo</span>
+            <CirclePlay className="h-5 w-5" strokeWidth={2} />
+            Watch demo
           </button>
-        </div>
-
-        {/* Trust Line from Copy brief */}
-        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-neutral-500 font-medium max-w-xl text-center">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            Built for seed to Series B funds. Your data stays yours: encrypted, isolated, and never used to train shared models.
-          </span>
         </div>
       </div>
 
-      {/* Hero Skyline pixel silhouette & golden highways with SCROLL button */}
-      <HeroSkyline onScrollClick={scrollToProblem} />
+      <HeroSkyline onScrollClick={() => scrollTo('problem')} onSearchClick={() => scrollTo('faq')} />
     </section>
   );
 };

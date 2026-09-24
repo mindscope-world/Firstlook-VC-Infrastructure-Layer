@@ -92,7 +92,7 @@ export default function InboxPage() {
           <button
             key={t.key}
             onClick={() => setTab(t)}
-            className={`rounded-lg px-3 py-1.5 text-sm ${tab.key === t.key ? "bg-ink text-white" : "text-slate-600 hover:bg-slate-100"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium ${tab.key === t.key ? "bg-ink text-white" : "text-muted hover:bg-[#f4f1ed]"}`}
           >
             {t.label}
           </button>
@@ -112,7 +112,7 @@ export default function InboxPage() {
                 <Badge tone={x.kind === "deal_mention" ? "good" : x.kind === "intro" ? "info" : "neutral"}>{KIND_LABEL[x.kind]}</Badge>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm">{describe(x)}</p>
-                  <blockquote className="mt-2 border-l-2 border-amber-300 pl-3 text-sm text-slate-600">“{x.citations[0]?.quote}”</blockquote>
+                  <blockquote className="mt-2 border-l-[3px] border-brand pl-3 text-sm text-muted">“{x.citations[0]?.quote}”</blockquote>
                   <p className="mt-2 text-xs text-muted">
                     From{" "}
                     <Link href={`/interactions/${x.interaction_id}#cite-${x.citations[0]?.start}`} className="underline">

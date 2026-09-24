@@ -28,8 +28,8 @@ export default function Overview() {
       <PageHeader title="Overview" subtitle="Everything captured from your team's email, calendar and calls." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
         {STATS.map(([key, label, href]) => (
-          <Link key={key} href={href} className="rounded-xl border border-line bg-white p-4 hover:border-slate-300">
-            <p className="text-2xl font-semibold tabular-nums">{data.counts[key] ?? 0}</p>
+          <Link key={key} href={href} className="rounded-3xl bg-white/90 p-5 shadow-[0_12px_40px_rgba(16,19,26,0.06),0_1px_2px_rgba(16,19,26,0.04)] transition hover:-translate-y-0.5">
+            <p className="display text-[32px] leading-none tabular-nums">{data.counts[key] ?? 0}</p>
             <p className="mt-1 text-xs text-muted">{label}</p>
           </Link>
         ))}

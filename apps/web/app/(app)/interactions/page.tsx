@@ -35,7 +35,7 @@ export default function InteractionsPage() {
           <button
             key={k || "all"}
             onClick={() => setKind(k)}
-            className={`rounded-lg px-3 py-1.5 text-sm ${kind === k ? "bg-ink text-white" : "text-slate-600 hover:bg-slate-100"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium ${kind === k ? "bg-ink text-white" : "text-muted hover:bg-[#f4f1ed]"}`}
           >
             {k || "all"}
           </button>
@@ -51,7 +51,7 @@ export default function InteractionsPage() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search subject and body"
-            className="w-64 rounded-lg border border-line bg-white px-3 py-1.5 text-sm"
+            className="w-64 rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand"
           />
         </form>
       </div>

@@ -30,7 +30,7 @@ export default function CompaniesPage() {
               setSearch(q);
             }}
           >
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or domain" className="w-64 rounded-lg border border-line bg-white px-3 py-1.5 text-sm" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or domain" className="w-64 rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand" />
           </form>
         }
       />

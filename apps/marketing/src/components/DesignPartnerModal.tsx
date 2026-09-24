@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Sparkles, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { LogoMark } from './Logo';
 
 interface DesignPartnerModalProps {
   isOpen: boolean;
@@ -30,9 +31,7 @@ export const DesignPartnerModal: React.FC<DesignPartnerModalProps> = ({ isOpen, 
         {/* Header */}
         <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 flex items-center justify-between border-b border-neutral-200">
           <div className="flex items-center gap-2">
-            <span className="relative flex items-center justify-center w-5 h-5 rounded-full border-[2.2px] border-[#F97316]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            </span>
+            <LogoMark />
             <span className="font-extrabold text-lg text-neutral-900">Design Partner Intake</span>
           </div>
           <button

@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, ApiError, useApi } from "@/lib/api";
+import { LogoMark } from "@/components/logo";
+import { Skyline } from "@/components/skyline";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:13001";
 const SEEDED = ["paul@savanna.vc", "amani@savanna.vc", "grace@savanna.vc", "tom@savanna.vc", "lena@harbor.capital"];
@@ -54,20 +56,31 @@ export default function LoginPage() {
     }
   }
 
+  const sky = {
+    background: "linear-gradient(180deg, #d4e1ee 0%, #e2e8ef 18%, #eceef2 30%, #f3efec 47%, #f7e9dc 60%, #f7dcc6 78%, #f4d4bc 100%)",
+  };
+
   if (checking) {
-    return <div className="flex min-h-screen items-center justify-center text-sm text-muted">Signing in…</div>;
+    return (
+      <div className="relative flex h-screen items-center justify-center overflow-hidden text-sm text-muted" style={sky}>
+        Signing in…
+        <Skyline className="h-[45%]" />
+      </div>
+    );
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold">
-          first<span className="text-brand">look</span>
-        </h1>
-        <p className="mt-1 text-sm text-muted">Sign in to your firm&apos;s workspace.</p>
+    <div className="relative flex min-h-screen flex-col items-center overflow-hidden px-6 pt-[14vh]" style={sky}>
+      <a href={SITE_URL} className="mb-7 inline-flex items-center gap-2.5" aria-label="Firstlook site">
+        <LogoMark size={26} />
+        <span className="text-[24px] font-bold tracking-[-0.03em]">Firstlook</span>
+      </a>
+      <div className="relative z-10 w-full max-w-[420px] rounded-[28px] bg-white/90 p-8 shadow-[0_20px_60px_rgba(16,19,26,0.10),0_1px_2px_rgba(16,19,26,0.05)] backdrop-blur-md">
+        <h1 className="display text-[30px] leading-tight">Sign in</h1>
+        <p className="mt-1 text-[15px] text-muted">to your firm&apos;s Firstlook workspace.</p>
 
         {cfg?.sso && (
-          <a href="/api/auth/workos/start" className="mt-6 block rounded-lg bg-brand px-3 py-2 text-center text-sm font-medium text-white">
+          <a href="/api/auth/workos/start" className="mt-6 flex h-12 items-center justify-center rounded-full bg-ink text-[15px] font-medium text-white hover:bg-ink-soft">
             Continue with SSO
           </a>
         )}
@@ -81,24 +94,24 @@ export default function LoginPage() {
                 void devLogin(email);
               }}
             >
-              <label className="block text-xs font-medium text-muted">Development sign-in</label>
+              <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-faint">Development sign-in</label>
               <p className="text-xs text-muted">Signs you in immediately as an existing user. No email is sent.</p>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="you@fund.vc"
-                className="w-full rounded-lg border border-line px-3 py-2 text-sm"
+                className="h-12 w-full rounded-full border border-line bg-white px-5 text-[15px] outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
               />
-              <button type="submit" className="w-full rounded-lg bg-ink px-3 py-2 text-sm font-medium text-white">
+              <button type="submit" className="flex h-12 w-full items-center justify-center rounded-full bg-ink text-[15px] font-medium text-white hover:bg-ink-soft">
                 Sign in
               </button>
             </form>
-            <div className="mt-5">
-              <p className="text-xs text-muted">Seeded users (run make seed):</p>
+            <div className="mt-6">
+              <p className="text-xs text-faint">Seeded users (run make seed):</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {SEEDED.map((s) => (
-                  <button key={s} onClick={() => devLogin(s)} className="rounded-full border border-line px-2 py-0.5 text-xs hover:bg-slate-50">
+                  <button key={s} onClick={() => devLogin(s)} className="rounded-full bg-[#f4f1ed] px-3 py-1 text-xs text-muted hover:bg-brand-soft hover:text-ink">
                     {s}
                   </button>
                 ))}
@@ -106,12 +119,13 @@ export default function LoginPage() {
             </div>
           </>
         )}
-        {error && <p className="mt-4 rounded-lg bg-rose-50 p-2 text-sm text-rose-800">{error}</p>}
+        {error && <p className="mt-4 rounded-2xl bg-[#fbe3df] p-3 text-sm text-[#a33a2c]">{error}</p>}
         {cfg && !cfg.devLogin && !cfg.sso && <p className="mt-6 text-sm text-muted">No sign-in method is configured.</p>}
       </div>
-      <a href={SITE_URL} className="text-xs text-muted hover:text-ink">
+      <a href={SITE_URL} className="relative z-10 mt-5 text-sm font-medium text-muted hover:text-ink">
         ← Back to firstlook site
       </a>
+      <Skyline className="h-[42%]" />
     </div>
   );
 }

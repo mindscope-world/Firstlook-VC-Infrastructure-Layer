@@ -1,10 +1,6 @@
-import React, { useMemo } from 'react';
-import { ArrowDown, Search } from 'lucide-react';
-
-// "Dawn city" skyline from the Hero design (Hero — dawn city.pdf).
-// Coordinates are in the design's pixel space: 1650 wide, with the skyline
-// occupying y 480–1032. The SVG crops from the sides on narrow screens and
-// stays anchored to the bottom.
+// Dawn-city skyline from the landing page hero (apps/marketing HeroSkyline),
+// without the hero's buttons. Decorative.
+import { useMemo } from "react";
 
 type Step = [x0: number, x1: number, top: number];
 
@@ -67,25 +63,17 @@ function blocks(steps: Step[], fill: string) {
   ));
 }
 
-interface HeroSkylineProps {
-  onScrollClick: () => void;
-  onSearchClick: () => void;
-}
-
-export const HeroSkyline: React.FC<HeroSkylineProps> = ({ onScrollClick, onSearchClick }) => {
-  const darkWindows = useMemo(() => windows(DARK, ['#997656', '#c39e72', '#d9b788'], 1), []);
-  const centreWindows = useMemo(() => windows(CHARCOAL, ['#8f7a6a', '#c8af90', '#e3c9a1'], 7), []);
-
+export function Skyline({ className = "" }: { className?: string }) {
+  const darkWindows = useMemo(() => windows(DARK, ["#997656", "#c39e72", "#d9b788"], 1), []);
+  const centreWindows = useMemo(() => windows(CHARCOAL, ["#8f7a6a", "#c8af90", "#e3c9a1"], 7), []);
   return (
-    <div className="absolute inset-x-0 bottom-0 h-[53.5%] pointer-events-none select-none" aria-hidden="false">
+    <div className={`pointer-events-none absolute inset-x-0 bottom-0 select-none ${className}`} aria-hidden="true">
       <svg
         viewBox="0 480 1650 552"
         preserveAspectRatio="xMidYMax slice"
         className="absolute inset-0 w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label="City skyline at dawn"
-      >
+              >
         <defs>
           <linearGradient id="hazeLight" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#e9d8d0" />
@@ -134,24 +122,6 @@ export const HeroSkyline: React.FC<HeroSkylineProps> = ({ onScrollClick, onSearc
         <path d="M0,1024 C520,1019 1050,1010 1650,990" stroke="#f3e6da" strokeOpacity="0.35" strokeWidth="1" fill="none" />
         <path d="M0,996 C380,991 900,982 1650,954" stroke="#f3e6da" strokeOpacity="0.18" strokeWidth="1" fill="none" />
       </svg>
-
-      <button
-        onClick={onScrollClick}
-        aria-label="Scroll to the next section"
-        className="pointer-events-auto absolute left-1/2 -translate-x-1/2 bottom-[2.6%] flex items-center gap-3 rounded-full border border-white/25 bg-white/15 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.42em] text-white/90 backdrop-blur-md transition hover:bg-white/25"
-      >
-        Scroll
-        <ArrowDown className="h-3.5 w-3.5" strokeWidth={2.2} />
-      </button>
-
-      <button
-        onClick={onSearchClick}
-        aria-label="Search"
-        className="pointer-events-auto absolute right-[2%] bottom-[3.5%] flex h-[60px] w-[60px] items-center justify-center rounded-2xl border border-white/40 bg-white/15 text-white shadow-lg backdrop-blur-md transition hover:bg-white/25"
-      >
-        <Search className="h-6 w-6" strokeWidth={2.2} />
-        <span className="absolute right-[15px] top-[13px] h-1.5 w-1.5 rounded-full bg-[#E7893A]" />
-      </button>
     </div>
   );
-};
+}

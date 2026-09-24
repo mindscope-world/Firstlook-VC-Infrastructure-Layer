@@ -61,7 +61,7 @@ export default function DealsPage() {
               void create();
             }}
           >
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New deal name" className="w-48 rounded-lg border border-line bg-white px-3 py-1.5 text-sm" />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New deal name" className="w-48 rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand" />
             <label className="flex items-center gap-1 text-xs text-muted">
               <input type="checkbox" checked={restricted} onChange={(e) => setRestricted(e.target.checked)} /> restricted
             </label>
@@ -69,7 +69,7 @@ export default function DealsPage() {
           </form>
         }
       />
-      {message && <p className="mb-4 rounded-lg bg-rose-50 p-2 text-sm text-rose-800">{message}</p>}
+      {message && <p className="mb-4 rounded-2xl bg-[#fbe3df] px-4 py-2.5 text-sm text-[#a33a2c]">{message}</p>}
       {!data ? (
         <Loading error={error} />
       ) : (
@@ -83,7 +83,7 @@ export default function DealsPage() {
                 </h3>
                 <div className="space-y-2">
                   {deals.map((d) => (
-                    <div key={d.id} className="rounded-xl border border-line bg-white p-3 text-sm">
+                    <div key={d.id} className="rounded-2xl bg-white/90 p-4 text-sm shadow-[0_8px_24px_rgba(16,19,26,0.06),0_1px_2px_rgba(16,19,26,0.04)]">
                       <p className="font-medium">
                         {d.name} {d.restricted && <Badge tone="warn">restricted</Badge>}
                       </p>

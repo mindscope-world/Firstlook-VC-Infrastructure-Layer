@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
+import { LogoMark } from './Logo';
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -13,9 +14,7 @@ export const Footer: React.FC = () => {
           {/* Brand & Mission (5 cols) */}
           <div className="md:col-span-5">
             <div className="flex items-center gap-2.5 mb-4">
-              <span className="relative flex items-center justify-center w-5 h-5 rounded-full border-[2.2px] border-[#F97316]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-              </span>
+              <LogoMark />
               <span className="font-extrabold text-lg tracking-tight text-neutral-900">
                 Firstlook
               </span>
