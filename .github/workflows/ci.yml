@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v5
       - run: docker build -f infra/docker/${{ matrix.image }}.Dockerfile -t firstlook/${{ matrix.image }}:ci .
       - name: Scan image
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: firstlook/${{ matrix.image }}:ci
           severity: CRITICAL,HIGH

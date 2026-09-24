@@ -7,9 +7,11 @@ fresh checkout runs with no .env at all.
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
+DEV_ENVS = {"local", "test", "ci"}
 
 
 class Settings(BaseSettings):
@@ -37,8 +39,10 @@ class Settings(BaseSettings):
     kafka_bootstrap: str = "localhost:19092"
 
     # KMS: "local" wraps tenant data keys with LOCAL_MASTER_KEY (base64, 32 bytes).
+    # Unset in local/test/ci, a fixed development key is derived (see
+    # master_key_bytes); anywhere else it must be set explicitly.
     kms_backend: str = "local"
-    local_master_key: str = "Zmlyc3Rsb29rLWxvY2FsLWRldi1tYXN0ZXIta2V5ISE="
+    local_master_key: str | None = None
 
     # Auth: session JWTs are issued by services/api and verified everywhere.
     session_secret: str = "local-dev-session-secret-change-me"
@@ -69,6 +73,29 @@ class Settings(BaseSettings):
     slack_client_id: str | None = None
     slack_client_secret: str | None = None
     slack_signing_secret: str | None = None
+
+    @property
+    def is_dev(self) -> bool:
+        return self.env in DEV_ENVS
+
+    def master_key_bytes(self) -> bytes:
+        import base64
+
+        if self.local_master_key:
+            return base64.b64decode(self.local_master_key)
+        if not self.is_dev:
+            raise RuntimeError("LOCAL_MASTER_KEY must be set outside local development")
+        # Development only: a fixed, public, obviously-not-secret key so local
+        # data survives restarts. Never valid outside local/test/ci.
+        return b"firstlook-local-dev-master-key!!"
+
+    @model_validator(mode="after")
+    def _no_dev_secrets_outside_dev(self) -> "Settings":
+        if not self.is_dev:
+            for name in ("session_secret", "internal_service_token"):
+                if getattr(self, name).startswith("local-dev"):
+                    raise ValueError(f"{name.upper()} must be set outside local development")
+        return self
 
 
 @lru_cache

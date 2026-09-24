@@ -7,7 +7,6 @@ that wraps it. Cloud KMS implementations replace LocalKms in Phase 4.
 
 from __future__ import annotations
 
-import base64
 import os
 from functools import lru_cache
 from typing import Protocol
@@ -51,5 +50,5 @@ class LocalKms:
 def get_kms() -> Kms:
     settings = get_settings()
     if settings.kms_backend == "local":
-        return LocalKms(base64.b64decode(settings.local_master_key))
+        return LocalKms(settings.master_key_bytes())
     raise ValueError(f"unknown KMS backend {settings.kms_backend!r}")

@@ -132,3 +132,13 @@ def test_dead_letter_queue():
     assert len(handled) == 1
     dlq = bus.topics["t.dlq"]
     assert len(dlq) == 1 and "boom" in dlq[0].payload["error"]
+
+
+def test_dev_secrets_refused_outside_dev(monkeypatch):
+    from firstlook_core.config import Settings
+
+    assert len(Settings(env="local").master_key_bytes()) == 32
+    with pytest.raises(RuntimeError):
+        Settings(env="production", session_secret="s", internal_service_token="t").master_key_bytes()
+    with pytest.raises(ValueError):
+        Settings(env="production")  # default session secret
