@@ -12,6 +12,10 @@ ARG INGEST_URL=http://ingest:8080
 RUN API_URL=$API_URL INGEST_URL=$INGEST_URL pnpm --filter @firstlook/web build
 
 FROM node:22-slim
+# The runtime only needs node. npm and corepack ship with the base image and
+# carry their own CVEs, so remove them.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 WORKDIR /app
 COPY --from=build /app/apps/web/.next/standalone ./
 COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
