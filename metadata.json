@@ -1,0 +1,6 @@
+{
+  "name": "Firstlook — AI Infrastructure for Venture Firms",
+  "description": "Firstlook unifies relationships, deal flow, and portfolio data into an intelligent graph with AI diligence copilots and portfolio monitoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
