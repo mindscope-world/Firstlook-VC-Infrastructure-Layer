@@ -12,6 +12,7 @@ import {
   LogOut,
   Mail,
   Plug,
+  Radar,
   Search,
   Settings,
   Users,
@@ -31,6 +32,7 @@ export interface Me {
 const NAV = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/sourcing", label: "Sourcing", icon: Radar },
   { href: "/interactions", label: "Interactions", icon: Mail },
   { href: "/people", label: "People", icon: Users },
   { href: "/companies", label: "Companies", icon: Building2 },

@@ -46,7 +46,7 @@ def golden_llm(fixtures: list[FundFixture]) -> FakeLlm:
         m = _ID.search(user)
         return golden.get(m.group(1), {}) if m else {"intros": [], "next_steps": [], "deal_mentions": []}
 
-    return FakeLlm(responder=respond)
+    return FakeLlm(responder=respond, model="fixture (no model call)")
 
 
 def fixture_rerank(prompt: str) -> dict[str, Any]:

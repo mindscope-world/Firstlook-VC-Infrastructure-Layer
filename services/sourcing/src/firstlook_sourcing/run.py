@@ -64,7 +64,8 @@ def load_candidates(conn: psycopg.Connection, now: datetime) -> tuple[list[Candi
     ).fetchall()
     obs = conn.execute(
         "SELECT company_id, signal, value, source, url, detail, observed_at, source_id FROM signal_observations"
-        " WHERE observed_at >= %s ORDER BY observed_at DESC",
+        # Recent signals, plus the full funding history (rounds matter for years).
+        " WHERE observed_at >= %s OR signal = 'funding_round_usd' ORDER BY observed_at DESC",
         (now - timedelta(days=400),),
     ).fetchall()
     warm = {

@@ -35,7 +35,30 @@ from .sources.vendor import VendorQuery, VendorSource
 
 log = logging.getLogger("firstlook.sourcing.collect")
 
-AUTHORITATIVE = ("vendor:", "registry:")
+# Which profile fields a source may overwrite. Everything else only fills blanks.
+VENDOR_FIELDS = frozenset(
+    {
+        "stage",
+        "country",
+        "founded_year",
+        "headcount",
+        "total_raised_usd",
+        "last_round_usd",
+        "last_round_at",
+        "github_org",
+        "jobs_board",
+        "description",
+    }
+)
+REGISTRY_FIELDS = frozenset({"country", "founded_year"})  # legal facts, not how the company describes itself
+
+
+def authoritative_columns(source: str) -> frozenset[str]:
+    if source.startswith("vendor:"):
+        return VENDOR_FIELDS
+    if source.startswith("registry:"):
+        return REGISTRY_FIELDS
+    return frozenset()
 
 
 @dataclass
@@ -107,12 +130,12 @@ class Collector:
             "SELECT description, sectors, description_embedding IS NULL AS no_emb FROM companies WHERE id = %s",
             (cid,),
         ).fetchone()
-        authoritative = p.source.startswith(AUTHORITATIVE)
+        authoritative = authoritative_columns(p.source)
 
         def pick(col: str) -> str:
             return (
                 f"{col} = coalesce(%({col})s, {col})"
-                if authoritative
+                if col in authoritative
                 else f"{col} = coalesce({col}, %({col})s)"
             )
 
@@ -135,7 +158,11 @@ class Collector:
             " profile_source_id = %(source_id)s, profile_updated_at = now() WHERE id = %(id)s",
             params,
         )
-        new_desc = p.description if (authoritative or not current["description"]) else current["description"]
+        new_desc = (
+            p.description
+            if ("description" in authoritative or not current["description"])
+            else current["description"]
+        )
         if new_desc and (current["no_emb"] or new_desc != current["description"]):
             vec = self.llm.embed(self.tenant_id, [new_desc], task="embed.company_description")[0]
             self.conn.execute(

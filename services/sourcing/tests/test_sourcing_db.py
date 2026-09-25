@@ -166,3 +166,20 @@ def test_other_tenant_sees_nothing(tenant):
     h = tenant["harbor"]
     assert q(h, "SELECT count(*) AS n FROM company_scores")[0]["n"] == 0
     assert q(h, "SELECT count(*) AS n FROM theses")[0]["n"] == 0
+
+
+def test_registry_fills_but_does_not_overwrite_vendor_description(tenant):
+    row = q(tenant["savanna"], "SELECT description, founded_year FROM companies WHERE name = 'Kilimo Data'")[
+        0
+    ]
+    assert row["description"].startswith("Credit scores for smallholder farmers")
+    assert row["founded_year"] == 2022
+
+
+def test_rounds_are_dated_by_announcement(tenant):
+    rows = q(
+        tenant["savanna"],
+        "SELECT observed_on FROM signal_observations o JOIN companies c ON c.id = o.company_id"
+        " WHERE c.name = 'PesaFlow' AND o.signal = 'funding_round_usd'",
+    )
+    assert [str(r["observed_on"]) for r in rows] == ["2025-03-02"]

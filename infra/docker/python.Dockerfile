@@ -1,7 +1,7 @@
 # One image for every Python service; the command picks the process:
 #   uvicorn firstlook_ingest.app:app | uvicorn firstlook_gateway.app:app
 #   python -m firstlook_core.relay | firstlook_resolver.consumer | firstlook_ai.consumer
-#   python -m firstlook_ingest.slack | firstlook_workflows.worker
+#   python -m firstlook_ingest.slack | firstlook_sourcing.consumer | firstlook_workflows.worker
 FROM python:3.12-slim AS build
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /usr/local/bin/uv
 WORKDIR /app
@@ -14,6 +14,7 @@ COPY services/ingest services/ingest
 COPY services/resolver services/resolver
 COPY services/ai services/ai
 COPY services/gateway services/gateway
+COPY services/sourcing services/sourcing
 COPY workflows workflows
 RUN uv sync --frozen --no-dev
 

@@ -150,12 +150,12 @@ Weeks 3–8 (build)
 - [~] Zoom/Meet transcript connector. CRM migration importers: **Affinity, HubSpot, Salesforce, Airtable** (CSV + API). *CSV import is tested. API importers and transcript connectors are tested only against mocked APIs or not at all.*
 - [~] Slack app v1 (dev workspace): deal channel notifications, `/firstlook <company>` lookup. *Signature verification and lookup are tested. Not yet installed in a real workspace.*
 
-**1b. Deal sourcing and scoring**
-- [ ] Thesis editor: structured filters (sector, stage, geo, cheque size) plus a free-text description, versioned per fund.
-- [ ] Signal ingestion from the first licensed data vendor (sandbox/trial access), plus free sources: company registries (incl. Kenya BRS where accessible), news RSS, job boards, GitHub. Daily Temporal schedules write to ClickHouse.
-- [ ] Ranker stage 1: rules + embedding similarity to the thesis (cold start). Collect thumbs up/down from day one. Switch to XGBoost once there are about 500 labels per fund or pooled features.
-- [ ] Ranker stage 2: LLM re-rank of the top N with a written rationale and citations.
-- [ ] Sourcing feed UI + weekly digest.
+**1b. Deal sourcing and scoring** (status 2026-09-25, branch `phase-1b-sourcing`; design in ADR 0007)
+- [x] Thesis editor: structured filters (sector, stage, geo, cheque size) plus a free-text description, versioned per fund.
+- [~] Signal ingestion from the first licensed data vendor (sandbox/trial access), plus free sources: company registries (incl. Kenya BRS where accessible), news RSS, job boards, GitHub. Daily Temporal schedules write to ClickHouse. *All built. The vendor is a sandbox adapter until one is chosen (§12 q3). Kenya BRS arrives as CSV extracts (no open API). Real feeds, GitHub and job boards are tested against mocked HTTP only.*
+- [x] Ranker stage 1: rules + embedding similarity to the thesis (cold start). Collect thumbs up/down from day one. *A logistic model trained from votes takes over at 30 labels per thesis. XGBoost at ~500 labels is not built yet (no fund has that many).*
+- [x] Ranker stage 2: LLM re-rank of the top N with a written rationale and citations. *Checked with a fixture stand-in only; not yet run against a live model.*
+- [x] Sourcing feed UI + weekly digest (email + Slack).
 
 **1c. Diligence and memo copilot**
 - [ ] Document ingestion: upload, Google Drive, Dropbox, DocSend. PDF/PPTX/XLSX parsing, with OCR for scanned files.

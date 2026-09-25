@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -39,6 +39,11 @@ class VendorSource(Protocol):
     def search(self, query: VendorQuery) -> list[VendorRecord]: ...
 
     def lookup(self, domain: str) -> VendorRecord | None: ...
+
+
+def _announced(value: str | None) -> datetime | None:
+    """A round is observed when it was announced, not when we fetched it."""
+    return datetime.combine(date.fromisoformat(value), datetime.min.time(), UTC) if value else None
 
 
 def _record(raw: dict[str, Any], source: str) -> VendorRecord:
@@ -71,6 +76,7 @@ def _record(raw: dict[str, Any], source: str) -> VendorRecord:
             float(r["money_raised_usd"]),
             source,
             url=r.get("source_url", ""),
+            observed_at=_announced(r.get("announced_on")),
             detail={"type": r.get("type"), "announced_on": r.get("announced_on")},
         )
         for r in rounds
