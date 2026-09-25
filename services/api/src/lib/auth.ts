@@ -44,6 +44,8 @@ const PERMISSIONS: Record<string, Role[]> = {
   "deals:write": ["admin", "partner", "associate"],
   "deals:restrict": ["admin", "partner"],
   "audit:read": ["admin"],
+  "theses:write": ["admin", "partner"],
+  "sourcing:feedback": ["admin", "partner", "associate", "platform"],
 };
 
 export function can(p: Principal, permission: keyof typeof PERMISSIONS | string): boolean {

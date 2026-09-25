@@ -18,6 +18,63 @@ interface CompanyDetail {
   warm_paths: WarmPath[];
 }
 
+interface Signal {
+  signal: string;
+  value: number;
+  source: string;
+  url: string;
+  detail: { title?: string };
+  observed_at: string;
+}
+
+const SIGNAL_LABEL: Record<string, string> = {
+  funding_round_usd: "Funding round",
+  headcount: "Headcount",
+  open_roles: "Open roles",
+  open_engineering_roles: "Engineering roles",
+  github_stars: "GitHub stars",
+  github_active_repos_30d: "Active repos (30d)",
+  github_public_repos: "Public repos",
+  web_visits_monthly: "Monthly web visits",
+  news_mention: "News",
+  incorporated: "Incorporated",
+};
+
+function Signals({ id }: { id: string }) {
+  const { data } = useApi<Signal[]>(`/companies/${id}/signals`);
+  if (!data || data.length === 0) return <Empty>No signals collected yet.</Empty>;
+  const latest = new Map<string, Signal>();
+  for (const s of data) if (s.signal !== "news_mention" && !latest.has(s.signal)) latest.set(s.signal, s);
+  const news = data.filter((s) => s.signal === "news_mention").slice(0, 5);
+  return (
+    <div className="space-y-3 text-sm">
+      <ul className="space-y-1.5">
+        {[...latest.values()].map((s) => (
+          <li key={s.signal} className="flex justify-between gap-2">
+            <span className="text-muted">{SIGNAL_LABEL[s.signal] ?? s.signal}</span>
+            <span className="text-right tabular-nums">
+              {s.signal === "funding_round_usd" ? usd(s.value) : s.signal === "incorporated" ? date(s.observed_at) : s.value.toLocaleString()}
+              <span className="ml-1.5 text-xs text-faint">{s.source}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      {news.length > 0 && (
+        <ul className="space-y-1 border-t border-line pt-3">
+          {news.map((n) => (
+            <li key={n.url}>
+              <a href={n.url} target="_blank" rel="noreferrer" className="hover:underline">
+                {n.detail.title ?? n.url}
+              </a>{" "}
+              <span className="text-xs text-faint">{date(n.observed_at)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function CompanyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data, error } = useApi<CompanyDetail>(`/companies/${id}`);
@@ -52,6 +109,9 @@ export default function CompanyPage({ params }: { params: Promise<{ id: string }
           </Card>
         </div>
         <div className="space-y-6">
+          <Card title="Signals">
+            <Signals id={data.id} />
+          </Card>
           <Card title="Deals">
             {data.deals.length === 0 ? (
               <Empty>Not in the pipeline.</Empty>

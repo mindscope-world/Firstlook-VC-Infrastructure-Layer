@@ -7,6 +7,7 @@ dependencies = [
     "firstlook-ingest",
     "firstlook-resolver",
     "firstlook-ai",
+    "firstlook-sourcing",
     "temporalio>=1.8",
 ]
 

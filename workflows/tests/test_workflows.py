@@ -67,3 +67,40 @@ async def test_auth_error_stops_workflow_without_retrying():
             AccountSyncWorkflow.run, args=["t", "a", 60, 0], id=f"wf-{uuid.uuid4()}", task_queue="test"
         )
     assert result["stopped"] == "AuthError" and len(calls) == 1
+
+
+@pytest.mark.integration
+async def test_sourcing_daily_collects_then_scores_each_tenant():
+    from firstlook_workflows.workflows import SourcingDailyWorkflow
+
+    order = []
+
+    @activity.defn(name="list_tenants")
+    async def list_tenants() -> list[str]:
+        return ["t1", "t2"]
+
+    @activity.defn(name="sourcing_collect")
+    async def sourcing_collect(t: str) -> dict:
+        order.append(("collect", t))
+        return {"discovered": 1}
+
+    @activity.defn(name="sourcing_score")
+    async def sourcing_score(t: str) -> list[str]:
+        order.append(("score", t))
+        return [f"run-{t}"]
+
+    env = await _env()
+    async with (
+        env,
+        Worker(
+            env.client,
+            task_queue="test",
+            workflows=[SourcingDailyWorkflow],
+            activities=[list_tenants, sourcing_collect, sourcing_score],
+        ),
+    ):
+        result = await env.client.execute_workflow(
+            SourcingDailyWorkflow.run, id=f"wf-{uuid.uuid4()}", task_queue="test"
+        )
+    assert order == [("collect", "t1"), ("score", "t1"), ("collect", "t2"), ("score", "t2")]
+    assert result["t2"]["runs"] == ["run-t2"]

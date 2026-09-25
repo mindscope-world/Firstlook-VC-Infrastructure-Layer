@@ -15,7 +15,8 @@ pytestmark = pytest.mark.db
 @pytest.fixture(scope="module")
 def seeded(migrated_db):
     with system_tx() as conn:
-        conn.execute("DELETE FROM tenants WHERE slug IN ('savanna', 'harbor')")
+        for row in conn.execute("SELECT id FROM tenants WHERE slug IN ('savanna', 'harbor')").fetchall():
+            conn.execute("SELECT purge_tenant(%s)", (row["id"],))
     fixtures = [savanna(), harbor()]
     set_llm(golden_llm(fixtures))
     bus = InMemoryBus()
@@ -208,7 +209,7 @@ def test_crm_import_links_to_existing_entities(seeded):
         "SELECT c.country, count(*) OVER () AS n FROM companies c JOIN entities e ON e.id = c.id"
         " WHERE c.domain = 'kilimodata.co.ke' AND e.merged_into IS NULL",
     )
-    assert len(kilimo) == 1 and kilimo[0]["country"] == "Kenya"
+    assert len(kilimo) == 1 and kilimo[0]["country"] == "KE"
     deals = {r["name"]: r["stage"] for r in q(t, "SELECT name, stage FROM deals")}
     assert deals["AfyaLink Seed"] == "invested"
     assert deals["Safiri Logistics Pre-seed"] == "diligence"

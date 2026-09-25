@@ -91,3 +91,47 @@ class CrmApiImportWorkflow:
             start_to_close_timeout=timedelta(hours=2),
             retry_policy=RetryPolicy(maximum_attempts=3, initial_interval=timedelta(seconds=30)),
         )
+
+
+@workflow.defn
+class SourcingDailyWorkflow:
+    """Daily: collect signals and discover companies for every tenant, then re-score all active theses."""
+
+    @workflow.run
+    async def run(self) -> dict[str, Any]:
+        tenants = await workflow.execute_activity(
+            activities.list_tenants, start_to_close_timeout=timedelta(minutes=1)
+        )
+        out: dict[str, Any] = {}
+        for t in tenants:
+            collected = await workflow.execute_activity(
+                activities.sourcing_collect,
+                t,
+                start_to_close_timeout=timedelta(hours=2),
+                retry_policy=RetryPolicy(maximum_attempts=3, initial_interval=timedelta(minutes=5)),
+            )
+            runs = await workflow.execute_activity(
+                activities.sourcing_score,
+                t,
+                start_to_close_timeout=timedelta(minutes=30),
+                retry_policy=RetryPolicy(maximum_attempts=3),
+            )
+            out[t] = {"collected": collected, "runs": runs}
+        return out
+
+
+@workflow.defn
+class SourcingDigestWorkflow:
+    """Weekly: email and Slack the top companies per thesis."""
+
+    @workflow.run
+    async def run(self) -> dict[str, Any]:
+        tenants = await workflow.execute_activity(
+            activities.list_tenants, start_to_close_timeout=timedelta(minutes=1)
+        )
+        return {
+            t: await workflow.execute_activity(
+                activities.sourcing_digest, t, start_to_close_timeout=timedelta(minutes=10)
+            )
+            for t in tenants
+        }
