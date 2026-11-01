@@ -43,6 +43,9 @@ async def main() -> None:
                 activities.list_tenants,
                 activities.recompute_strength,
                 activities.crm_api_import,
+                activities.sourcing_collect,
+                activities.sourcing_score,
+                activities.sourcing_digest,
             ],
             activity_executor=pool,
         )
