@@ -6,7 +6,7 @@ This plan turns the proposal into a build sequence. **We build the application f
 
 Where the plan differs from the proposal, it says so and gives the reason.
 
-**Status key** (checked against the code on 2026-11-01): ✅ implemented · 🟠 partly implemented · ❌ can't be done in code, or hard to (needs outside parties, legal work or certification) · 🟦 not yet implemented
+**Status key** (checked against the code on 2026-11-01; Phase 1c/1d items updated 2026-11-06): ✅ implemented · 🟠 partly implemented · ❌ can't be done in code, or hard to (needs outside parties, legal work or certification) · 🟦 not yet implemented
 
 ---
 
@@ -146,7 +146,7 @@ Weeks 3–8 (build)
 
 **1a. Relationship intelligence (auto-CRM)**
 - ✅ Parser pipeline: MIME/HTML cleanup, signature and quoted-thread stripping, attachment extraction (stored encrypted), signature enrichment of titles.
-- ✅ Entity resolution v1: deterministic rules (email, domain, registry ID, CRM ID), then embedding + name similarity with confidence scores. Low-confidence matches go to a **review queue UI** (merge / distinct).
+- ✅ Entity resolution v1: deterministic rules (email, domain, registry ID, CRM ID), then embedding + name similarity with confidence scores. Low-confidence matches go to a **review queue UI** (merge / distinct). *The ER eval (`packages/evals`) scores pairwise precision 1.0 and recall 0.85 on its golden set. Every true match the resolver doesn't link is in the review queue. The eval found and fixed two bugs: colleagues sharing a surname, first initial and domain were auto-merged, and CRM IDs were dropped on email matches.*
 - ✅ LLM extraction of intros, next steps and deal mentions using JSON-schema outputs, with validation and verbatim citations back to message IDs and character offsets. Accepting an item is what writes to the graph (ADR 0006). *Only checked against golden fixture output. It has not yet run against a live model with an eval score (`make seed-llm` is the entry point).*
 - ✅ Relationship strength score (recency, frequency, reciprocity), plus team-wide "warm path" queries over `edges` (`warm_paths()` in SQL).
 - 🟠 Zoom/Meet transcript connector. CRM migration importers: **Affinity, HubSpot, Salesforce, Airtable** (CSV + API). *CSV import is tested. API importers and transcript connectors are tested only against mocked APIs or not at all.*
@@ -160,15 +160,15 @@ Weeks 3–8 (build)
 - ✅ Sourcing feed UI + weekly digest (email + Slack).
 
 **1c. Diligence and memo copilot**
-- 🟦 Document ingestion: upload, Google Drive, Dropbox, DocSend. PDF/PPTX/XLSX parsing, with OCR for scanned files. *Groundwork only: a Tesseract OCR adapter and encrypted email-attachment extraction exist.*
-- 🟦 Fact-sheet extraction schema (team, traction, unit economics, round terms) with per-field confidence and source spans.
+- 🟠 Document ingestion: upload, Google Drive, Dropbox, DocSend. PDF/PPTX/XLSX parsing, with OCR for scanned files. *Upload, email attachments, parsing (PDF, PPTX with tables and notes, XLSX, images) and OCR for pages without a text layer are built (`services/documents`, ADR 0008), along with the Documents pages in the web app. The Google Drive, Dropbox and DocSend connectors are not built. Document text is not yet indexed for search.*
+- ✅ Fact-sheet extraction schema (team, traction, unit economics, round terms) with per-field confidence and source spans. *Every value is cited to a page and character offsets. Uncited values are dropped, and numbers that can't be read off their quote are flagged. Accept/reject is in the UI. Checked against golden fact sheets only: not yet run against a live model (`make evals-live`).*
 - 🟦 Consistency checks (e.g. deck ARR vs model ARR) shown as flags.
 - 🟦 Memo drafting in the firm's own template (tenant-uploaded template → section prompts), with a citation for every numeric claim. Uncited numbers are highlighted.
 - 🟦 "New inbound deck" workflow (the proposal's sequence diagram) implemented as a Temporal workflow. Output: fact sheet + score + draft reply awaiting analyst approval.
 
 **1d. Quality and safety**
-- 🟦 `packages/evals`: golden sets per task (entity resolution precision/recall, extraction field accuracy, memo citation coverage, ranking NDCG). Start from public decks and synthetic data. Add design-partner samples later only with consent and after Phase 4 provides a secure place to keep them. Evals run in CI on every prompt or model change, and a regression fails the build.
-- 🟠 Prompt-injection defences: untrusted content wrapped as data, tool allow-lists per task, no outbound actions without an `approvals` record, red-team test set in evals. *Extraction and the sourcing re-rank wrap untrusted text as data, the `approvals` table exists, and the fixtures include an injection attempt. Tool allow-lists and a red-team eval set are not built.*
+- 🟠 `packages/evals`: golden sets per task (entity resolution precision/recall, extraction field accuracy, memo citation coverage, ranking NDCG). Start from public decks and synthetic data. Add design-partner samples later only with consent and after Phase 4 provides a secure place to keep them. Evals run in CI on every prompt or model change, and a regression fails the build. *Built: entity resolution, extraction (with a red-team set), ranking NDCG and fact sheets, with gates in `thresholds.yaml`. CI runs the golden-mode suites on every PR. `evals-live.yml` runs the live model on prompt and model changes once the `ANTHROPIC_API_KEY` secret is set. Still to do: the first live baseline (the `live` thresholds are provisional until then), and memo citation coverage (memo drafting isn't built).*
+- 🟠 Prompt-injection defences: untrusted content wrapped as data, tool allow-lists per task, no outbound actions without an `approvals` record, red-team test set in evals. *Extraction and the sourcing re-rank wrap untrusted text as data, the `approvals` table exists, and the fixtures include an injection attempt. Fact sheets and the fact-sheet prompt do the same, and the evals include a red-team set (four injection emails plus an injected deck slide). Tool allow-lists are not built.*
 - 🟦 Threat model + data-flow diagrams. Secure-by-design review of the auth, RLS and adapter code.
 
 **Exit gate:** on fixtures, deck → fact sheet takes under 15 min and a memo draft takes under 2 h end to end. Entity-resolution precision is at least 95% on the golden set. At least 3 design partners have seen demos and given written feedback.
