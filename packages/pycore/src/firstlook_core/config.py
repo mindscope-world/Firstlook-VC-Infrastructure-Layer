@@ -55,6 +55,16 @@ class Settings(BaseSettings):
     temporal_namespace: str = "default"
     temporal_task_queue: str = "firstlook"
 
+    # Deal sourcing (services/sourcing).
+    clickhouse_url: str | None = None  # e.g. http://localhost:18123 to mirror signals
+    clickhouse_user: str = "firstlook"
+    clickhouse_password: str = "firstlook"
+    github_token: str | None = None  # optional; raises the GitHub API rate limit
+    sourcing_vendor: str = "sandbox"  # the licensed vendor adapter to use
+    sourcing_vendor_path: Path | None = None  # sandbox vendor export (defaults to the fixtures)
+    sourcing_rss_feeds: str | None = None  # comma-separated; defaults to African tech news feeds
+    sourcing_rerank_top_n: int = 20
+
     smtp_host: str = "localhost"
     smtp_port: int = 11025
 

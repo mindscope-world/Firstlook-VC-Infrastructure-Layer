@@ -25,6 +25,7 @@ services/ingest       Python: OAuth connectors, sync, CRM import, Slack install 
 services/resolver     Python: MIME parsing, quote/signature stripping, entity resolution, relationship strength
 services/ai           Python: cited extraction of intros, next steps, deal mentions
 services/gateway      Python: LLM gateway (budgets, redaction, metering, audit; Claude via the Anthropic SDK)
+services/sourcing     Python: theses, company signals (vendor, registries, news, jobs, GitHub), two-stage ranking, digest
 workflows             Temporal workflows (account sync, nightly strength, CRM API import)
 packages/pycore       Shared Python: tenant-scoped DB, encryption, adapters, outbox, auth
 packages/schema       SQL migrations: tables, row-level security, merge / warm-path / decision functions

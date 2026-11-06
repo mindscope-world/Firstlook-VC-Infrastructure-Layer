@@ -15,7 +15,8 @@ pytestmark = pytest.mark.db
 @pytest.fixture(scope="module")
 def seeded(migrated_db):
     with system_tx() as conn:
-        conn.execute("DELETE FROM tenants WHERE slug IN ('savanna', 'harbor')")
+        for row in conn.execute("SELECT id FROM tenants WHERE slug IN ('savanna', 'harbor')").fetchall():
+            conn.execute("SELECT purge_tenant(%s)", (row["id"],))
     fixtures = [savanna(), harbor()]
     set_llm(golden_llm(fixtures))
     bus = InMemoryBus()
@@ -180,6 +181,17 @@ def test_accepting_intro_adds_edges_and_warm_path(seeded):
     assert paths == sorted(paths, key=lambda p: -p["score"])
 
 
+def test_warm_paths_return_each_chain_of_people_once(seeded):
+    # Amani and Joseph share both a `knows` and an `introduced` edge, which once
+    # made Amani -> Joseph -> Wanjiru (Kilimo Data) come back twice.
+    ids, _ = seeded
+    t = ids["savanna"]
+    kilimo = q(t, "SELECT id FROM companies WHERE domain = 'kilimodata.co.ke'")[0]["id"]
+    paths = [tuple(p["path"]) for p in q(t, "SELECT path FROM warm_paths(%s, 3, 50)", kilimo)]
+    assert paths, "expected at least one warm path to Kilimo Data"
+    assert len(paths) == len(set(paths))
+
+
 def test_relationship_strength_reflects_recency_and_reciprocity(seeded):
     ids, _ = seeded
     t = ids["savanna"]
@@ -208,7 +220,7 @@ def test_crm_import_links_to_existing_entities(seeded):
         "SELECT c.country, count(*) OVER () AS n FROM companies c JOIN entities e ON e.id = c.id"
         " WHERE c.domain = 'kilimodata.co.ke' AND e.merged_into IS NULL",
     )
-    assert len(kilimo) == 1 and kilimo[0]["country"] == "Kenya"
+    assert len(kilimo) == 1 and kilimo[0]["country"] == "KE"
     deals = {r["name"]: r["stage"] for r in q(t, "SELECT name, stage FROM deals")}
     assert deals["AfyaLink Seed"] == "invested"
     assert deals["Safiri Logistics Pre-seed"] == "diligence"

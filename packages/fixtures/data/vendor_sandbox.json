@@ -1,0 +1,743 @@
+[
+ {
+  "id": "sbx-001",
+  "name": "Kilimo Data",
+  "domain": "kilimodata.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "AgriTech",
+   "Lending"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2022-01-01",
+  "employee_count": 24,
+  "total_funding_usd": 400000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 400000,
+    "announced_on": "2025-08-12",
+    "source_url": "https://news.example/kilimodata.co.ke/2025-08-12"
+   }
+  ],
+  "short_description": "Credit scores for smallholder farmers from satellite imagery and mobile-money history, sold to agri lenders.",
+  "founders": [
+   {
+    "name": "Wanjiru Kamau",
+    "email": "wanjiru@kilimodata.co.ke",
+    "title": "Co-founder & CEO"
+   }
+  ],
+  "github_org": "kilimodata",
+  "jobs_board": "greenhouse:kilimodata",
+  "web_visits_monthly": 18000
+ },
+ {
+  "id": "sbx-002",
+  "name": "PesaFlow",
+  "domain": "pesaflow.africa",
+  "country_code": "KE",
+  "categories": [
+   "FinTech",
+   "Payments"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2021-01-01",
+  "employee_count": 61,
+  "total_funding_usd": 2500000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 2500000,
+    "announced_on": "2025-03-02",
+    "source_url": "https://news.example/pesaflow.africa/2025-03-02"
+   }
+  ],
+  "short_description": "Payment orchestration for East African merchants across M-Pesa, Airtel Money and cards.",
+  "founders": [
+   {
+    "name": "Jane Achieng",
+    "email": "jane@pesaflow.africa",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": "lever:pesaflow",
+  "web_visits_monthly": 95000
+ },
+ {
+  "id": "sbx-003",
+  "name": "Duka Direct",
+  "domain": "dukadirect.com",
+  "country_code": "KE",
+  "categories": [
+   "B2B Commerce",
+   "Informal Retail"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2021-01-01",
+  "employee_count": 140,
+  "total_funding_usd": 3000000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 3000000,
+    "announced_on": "2026-06-20",
+    "source_url": "https://news.example/dukadirect.com/2026-06-20"
+   }
+  ],
+  "short_description": "WhatsApp-based restocking and working-capital loans for informal kiosks.",
+  "founders": [
+   {
+    "name": "Brian Kiprop",
+    "email": "brian@dukadirect.com",
+    "title": "Founder"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": 42000
+ },
+ {
+  "id": "sbx-004",
+  "name": "SolarNest",
+  "domain": "solarnest.io",
+  "country_code": "GH",
+  "categories": [
+   "Clean Energy",
+   "Solar"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2020-01-01",
+  "employee_count": 85,
+  "total_funding_usd": 1800000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 1800000,
+    "announced_on": "2024-11-05",
+    "source_url": "https://news.example/solarnest.io/2024-11-05"
+   }
+  ],
+  "short_description": "Pay-as-you-go solar for small businesses in Ghana and Kenya.",
+  "founders": [
+   {
+    "name": "Kofi Mensah",
+    "email": "kofi@solarnest.io",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-005",
+  "name": "AfyaLink",
+  "domain": "afyalink.health",
+  "country_code": "KE",
+  "categories": [
+   "HealthTech"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2021-01-01",
+  "employee_count": 38,
+  "total_funding_usd": 500000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 500000,
+    "announced_on": "2024-09-01",
+    "source_url": "https://news.example/afyalink.health/2024-09-01"
+   }
+  ],
+  "short_description": "Clinic management and claims software for private clinics.",
+  "founders": [
+   {
+    "name": "Nia Odhiambo",
+    "email": "nia@afyalink.health",
+    "title": "Co-founder & CEO"
+   }
+  ],
+  "github_org": "afyalink",
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-006",
+  "name": "Safiri Logistics",
+  "domain": "safiri.co",
+  "country_code": "TZ",
+  "categories": [
+   "Logistics",
+   "Freight"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2023-01-01",
+  "employee_count": 19,
+  "total_funding_usd": 250000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 250000,
+    "announced_on": "2025-12-10",
+    "source_url": "https://news.example/safiri.co/2025-12-10"
+   }
+  ],
+  "short_description": "Cross-border freight marketplace for trucks between Dar es Salaam, Kampala and Kigali.",
+  "founders": [
+   {
+    "name": "Baraka Said",
+    "email": "baraka@safiri.co",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-007",
+  "name": "Chama Pay",
+  "domain": "chamapay.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "FinTech",
+   "Savings"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2024-01-01",
+  "employee_count": 9,
+  "total_funding_usd": 350000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 350000,
+    "announced_on": "2026-07-15",
+    "source_url": "https://news.example/chamapay.co.ke/2026-07-15"
+   }
+  ],
+  "short_description": "Digital savings groups (chamas) with shared wallets and credit scoring for members.",
+  "founders": [
+   {
+    "name": "Esther Wairimu",
+    "email": "esther@chamapay.co.ke",
+    "title": "Co-founder & CEO"
+   }
+  ],
+  "github_org": "chamapay",
+  "jobs_board": "greenhouse:chamapay",
+  "web_visits_monthly": 12000
+ },
+ {
+  "id": "sbx-008",
+  "name": "Mavuno Credit",
+  "domain": "mavunocredit.com",
+  "country_code": "UG",
+  "categories": [
+   "AgriTech",
+   "Lending"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2022-01-01",
+  "employee_count": 33,
+  "total_funding_usd": 1500000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 300000,
+    "announced_on": "2023-05-01",
+    "source_url": "https://news.example/mavunocredit.com/2023-05-01"
+   },
+   {
+    "type": "Seed",
+    "money_raised_usd": 1200000,
+    "announced_on": "2026-04-22",
+    "source_url": "https://news.example/mavunocredit.com/2026-04-22"
+   }
+  ],
+  "short_description": "Input financing for smallholder farmers repaid at harvest through off-taker contracts.",
+  "founders": [
+   {
+    "name": "Isaac Okello",
+    "email": "isaac@mavunocredit.com",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": "lever:mavunocredit",
+  "web_visits_monthly": 8000
+ },
+ {
+  "id": "sbx-009",
+  "name": "Tuma",
+  "domain": "tuma.money",
+  "country_code": "RW",
+  "categories": [
+   "FinTech",
+   "Remittance"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2022-01-01",
+  "employee_count": 27,
+  "total_funding_usd": 1500000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 1500000,
+    "announced_on": "2025-10-30",
+    "source_url": "https://news.example/tuma.money/2025-10-30"
+   }
+  ],
+  "short_description": "Low-cost remittances from the Gulf to East Africa settled to mobile money.",
+  "founders": [
+   {
+    "name": "Aline Uwase",
+    "email": "aline@tuma.money",
+    "title": "CEO"
+   }
+  ],
+  "github_org": "tuma-money",
+  "jobs_board": null,
+  "web_visits_monthly": 30000
+ },
+ {
+  "id": "sbx-010",
+  "name": "Shamba Sense",
+  "domain": "shambasense.africa",
+  "country_code": "KE",
+  "categories": [
+   "AgriTech",
+   "AI"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2025-01-01",
+  "employee_count": 6,
+  "total_funding_usd": 150000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 150000,
+    "announced_on": "2026-08-28",
+    "source_url": "https://news.example/shambasense.africa/2026-08-28"
+   }
+  ],
+  "short_description": "Soil and weather advisories for farmers over SMS using low-cost sensors.",
+  "founders": [
+   {
+    "name": "Peter Ndungu",
+    "email": "peter@shambasense.africa",
+    "title": "Founder"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-011",
+  "name": "Lipa Later Kenya",
+  "domain": "lipalater.example",
+  "country_code": "KE",
+  "categories": [
+   "FinTech",
+   "Lending"
+  ],
+  "last_funding_type": "Series A",
+  "founded_on": "2019-01-01",
+  "employee_count": 180,
+  "total_funding_usd": 12000000,
+  "funding_rounds": [
+   {
+    "type": "Series A",
+    "money_raised_usd": 12000000,
+    "announced_on": "2024-02-14",
+    "source_url": "https://news.example/lipalater.example/2024-02-14"
+   }
+  ],
+  "short_description": "Buy-now-pay-later for consumer electronics and education fees.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-012",
+  "name": "Kopa Mkulima",
+  "domain": "kopamkulima.co.tz",
+  "country_code": "TZ",
+  "categories": [
+   "AgriTech",
+   "FinTech"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2023-01-01",
+  "employee_count": 21,
+  "total_funding_usd": 900000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 900000,
+    "announced_on": "2026-02-11",
+    "source_url": "https://news.example/kopamkulima.co.tz/2026-02-11"
+   }
+  ],
+  "short_description": "Warehouse-receipt lending for grain traders and cooperatives in Tanzania.",
+  "founders": [
+   {
+    "name": "Grace Mushi",
+    "email": "grace@kopamkulima.co.tz",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": "greenhouse:kopamkulima",
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-013",
+  "name": "Hisa Hub",
+  "domain": "hisahub.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "FinTech",
+   "Wealth"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2024-01-01",
+  "employee_count": 7,
+  "total_funding_usd": 200000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 200000,
+    "announced_on": "2025-11-19",
+    "source_url": "https://news.example/hisahub.co.ke/2025-11-19"
+   }
+  ],
+  "short_description": "Micro-investing in money-market funds and treasury bills from M-Pesa.",
+  "founders": [
+   {
+    "name": "Daniel Kimani",
+    "email": "daniel@hisahub.co.ke",
+    "title": "CEO"
+   }
+  ],
+  "github_org": "hisahub",
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-014",
+  "name": "Maziwa Chain",
+  "domain": "maziwachain.com",
+  "country_code": "KE",
+  "categories": [
+   "AgriTech",
+   "Supply Chain"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2021-01-01",
+  "employee_count": 48,
+  "total_funding_usd": 2000000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 2000000,
+    "announced_on": "2024-06-06",
+    "source_url": "https://news.example/maziwachain.com/2024-06-06"
+   }
+  ],
+  "short_description": "Dairy collection logistics and instant payments for farmer cooperatives.",
+  "founders": [
+   {
+    "name": "Joyce Chebet",
+    "email": "joyce@maziwachain.com",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-015",
+  "name": "Soko Credit",
+  "domain": "sokocredit.et",
+  "country_code": "ET",
+  "categories": [
+   "FinTech",
+   "Lending"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2024-01-01",
+  "employee_count": 12,
+  "total_funding_usd": 300000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 300000,
+    "announced_on": "2026-05-03",
+    "source_url": "https://news.example/sokocredit.et/2026-05-03"
+   }
+  ],
+  "short_description": "Merchant cash advances for Addis Ababa retailers using POS data.",
+  "founders": [
+   {
+    "name": "Selam Tesfaye",
+    "email": "selam@sokocredit.et",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-016",
+  "name": "NairaStack",
+  "domain": "nairastack.ng",
+  "country_code": "NG",
+  "categories": [
+   "FinTech",
+   "Banking"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2022-01-01",
+  "employee_count": 55,
+  "total_funding_usd": 2200000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 2200000,
+    "announced_on": "2025-07-07",
+    "source_url": "https://news.example/nairastack.ng/2025-07-07"
+   }
+  ],
+  "short_description": "Banking-as-a-service APIs for Nigerian fintechs.",
+  "founders": [],
+  "github_org": "nairastack",
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-017",
+  "name": "Cairo Carts",
+  "domain": "cairocarts.example",
+  "country_code": "EG",
+  "categories": [
+   "E-commerce"
+  ],
+  "last_funding_type": "Series B",
+  "founded_on": "2018-01-01",
+  "employee_count": 420,
+  "total_funding_usd": 30000000,
+  "funding_rounds": [
+   {
+    "type": "Series B",
+    "money_raised_usd": 30000000,
+    "announced_on": "2025-01-20",
+    "source_url": "https://news.example/cairocarts.example/2025-01-20"
+   }
+  ],
+  "short_description": "Grocery quick-commerce in Cairo and Alexandria.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-018",
+  "name": "Elimu Plus",
+  "domain": "elimuplus.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "EdTech"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2021-01-01",
+  "employee_count": 40,
+  "total_funding_usd": 1000000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 1000000,
+    "announced_on": "2025-04-15",
+    "source_url": "https://news.example/elimuplus.co.ke/2025-04-15"
+   }
+  ],
+  "short_description": "Revision content and exam prep for Kenyan secondary students over WhatsApp.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-019",
+  "name": "Boda Charge",
+  "domain": "bodacharge.co.ug",
+  "country_code": "UG",
+  "categories": [
+   "E-Mobility",
+   "Clean Energy"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2022-01-01",
+  "employee_count": 70,
+  "total_funding_usd": 2500000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 2500000,
+    "announced_on": "2025-09-09",
+    "source_url": "https://news.example/bodacharge.co.ug/2025-09-09"
+   }
+  ],
+  "short_description": "Battery swapping for electric motorcycle taxis in Kampala.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-020",
+  "name": "Kigali Health Records",
+  "domain": "khr.rw",
+  "country_code": "RW",
+  "categories": [
+   "HealthTech",
+   "SaaS"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2024-01-01",
+  "employee_count": 8,
+  "total_funding_usd": 250000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 250000,
+    "announced_on": "2026-03-03",
+    "source_url": "https://news.example/khr.rw/2026-03-03"
+   }
+  ],
+  "short_description": "Interoperable health records for Rwandan district hospitals.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-021",
+  "name": "Accra Ledger",
+  "domain": "accraledger.gh",
+  "country_code": "GH",
+  "categories": [
+   "FinTech",
+   "SaaS"
+  ],
+  "last_funding_type": "Pre-Seed",
+  "founded_on": "2024-01-01",
+  "employee_count": 10,
+  "total_funding_usd": 400000,
+  "funding_rounds": [
+   {
+    "type": "Pre-Seed",
+    "money_raised_usd": 400000,
+    "announced_on": "2026-06-01",
+    "source_url": "https://news.example/accraledger.gh/2026-06-01"
+   }
+  ],
+  "short_description": "Bookkeeping and tax filing for Ghanaian SMEs from mobile-money statements.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-022",
+  "name": "Nile Neobank",
+  "domain": "nileneobank.example",
+  "country_code": "EG",
+  "categories": [
+   "FinTech",
+   "Neobank"
+  ],
+  "last_funding_type": "Series A",
+  "founded_on": "2020-01-01",
+  "employee_count": 150,
+  "total_funding_usd": 15000000,
+  "funding_rounds": [
+   {
+    "type": "Series A",
+    "money_raised_usd": 15000000,
+    "announced_on": "2025-05-25",
+    "source_url": "https://news.example/nileneobank.example/2025-05-25"
+   }
+  ],
+  "short_description": "Digital bank for young professionals in Egypt.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-023",
+  "name": "Tamu Foods",
+  "domain": "tamufoods.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "Food",
+   "Consumer"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2020-01-01",
+  "employee_count": 90,
+  "total_funding_usd": 1500000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 1500000,
+    "announced_on": "2024-03-12",
+    "source_url": "https://news.example/tamufoods.co.ke/2024-03-12"
+   }
+  ],
+  "short_description": "Packaged traditional snacks sold through supermarkets.",
+  "founders": [],
+  "github_org": null,
+  "jobs_board": null,
+  "web_visits_monthly": null
+ },
+ {
+  "id": "sbx-024",
+  "name": "Pwani Pay",
+  "domain": "pwanipay.co.ke",
+  "country_code": "KE",
+  "categories": [
+   "FinTech",
+   "Payments"
+  ],
+  "last_funding_type": "Seed",
+  "founded_on": "2023-01-01",
+  "employee_count": 29,
+  "total_funding_usd": 1100000,
+  "funding_rounds": [
+   {
+    "type": "Seed",
+    "money_raised_usd": 1100000,
+    "announced_on": "2026-01-28",
+    "source_url": "https://news.example/pwanipay.co.ke/2026-01-28"
+   }
+  ],
+  "short_description": "Tourism and hospitality payments for the Kenyan coast, with USD and KES settlement.",
+  "founders": [
+   {
+    "name": "Fatma Hassan",
+    "email": "fatma@pwanipay.co.ke",
+    "title": "CEO"
+   }
+  ],
+  "github_org": null,
+  "jobs_board": "lever:pwanipay",
+  "web_visits_monthly": 15000
+ }
+]

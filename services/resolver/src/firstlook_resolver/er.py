@@ -101,6 +101,16 @@ def derived_company_name(domain: str) -> str:
     return domain.split(".")[0].replace("-", " ").title()
 
 
+def domain_label_matches(name: str, domain: str) -> bool:
+    """True when a company name spells its domain's main label, e.g.
+    "Rift Valley Partners" / riftvalley.vc or "Duka Direct" / dukadirect.com."""
+    label = domain.lower().split(".")[0].replace("-", "")
+    compact = re.sub(
+        r"[^a-z0-9]", "", unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()
+    )
+    return len(label) >= 5 and compact.startswith(label)
+
+
 def name_from_email(email: str) -> str:
     local = email.split("@", 1)[0]
     local = re.sub(r"\+.*$", "", local)
@@ -277,6 +287,9 @@ class Resolver:
                 if domain and cand_domain and cand_domain != domain:
                     continue  # two different registered domains: different companies
                 sim = fuzz.token_sort_ratio(norm, normalise_company_name(cand["canonical_name"])) / 100
+                if not domain and cand_domain and domain_label_matches(name, cand_domain):
+                    # "Rift Valley Partners" vs a company known only as riftvalley.vc
+                    sim = max(sim, 0.98)
                 if best is None or sim > best[0]:
                     best = (sim, {"candidate": cand, "name_sim": sim})
 
@@ -287,6 +300,17 @@ class Resolver:
                 self.conn.execute(
                     "UPDATE companies SET domain = coalesce(domain, %s) WHERE id = %s", (domain, entity_id)
                 )
+            if registry_id:
+                self.add_identifier(entity_id, "registry_id", registry_id, source_id)
+                self.conn.execute(
+                    "UPDATE companies SET registry_id = coalesce(registry_id, %s) WHERE id = %s",
+                    (registry_id, entity_id),
+                )
+            cand_domain = self.conn.execute(
+                "SELECT domain::text AS d FROM companies WHERE id = %s", (entity_id,)
+            ).fetchone()["d"]
+            if cand_domain:
+                self._upgrade_derived_name(entity_id, cand_domain, name)
             return Resolution(entity_id, False, "similarity", best[0])
 
         entity_id = self._new_entity("company", name)

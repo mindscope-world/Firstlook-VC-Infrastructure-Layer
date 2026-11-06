@@ -45,6 +45,7 @@ class FundFixture:
     transcripts: list[tuple[str, dict[str, Any]]]  # (owner, Transcript)
     crm_csv: list[tuple[str, str, str]]  # (vendor, object_type, csv text)
     er_expectations: list[dict[str, Any]] = field(default_factory=list)
+    theses: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _days_ago(now: datetime, days: float, hour: int = 9) -> datetime:
@@ -644,8 +645,21 @@ def savanna(now: datetime | None = None) -> FundFixture:
         },
     ]
 
+    theses = [
+        {
+            "name": "East Africa financial inclusion",
+            "sectors": ["fintech", "agritech"],
+            "stages": ["pre-seed", "seed"],
+            "geographies": ["east-africa"],
+            "cheque_min_usd": 250_000,
+            "cheque_max_usd": 1_000_000,
+            "founder_profile": "Operators who have built distribution in informal markets; technical co-founder in place.",
+            "description": "Credit, payments and savings infrastructure for smallholder farmers, informal merchants "
+            "and savings groups, built on mobile money.",
+        }
+    ]
     return FundFixture(
-        "Savanna Ventures", "savanna", TEAM, emails, meetings, transcripts, crm_csv, er_expectations
+        "Savanna Ventures", "savanna", TEAM, emails, meetings, transcripts, crm_csv, er_expectations, theses
     )
 
 

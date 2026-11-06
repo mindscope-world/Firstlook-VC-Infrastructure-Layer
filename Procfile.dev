@@ -6,5 +6,6 @@ gateway:  .venv/bin/uvicorn firstlook_gateway.app:app --port 14300 --reload --re
 relay:    .venv/bin/python -m firstlook_core.relay
 resolver: .venv/bin/python -m firstlook_resolver.consumer
 ai:       .venv/bin/python -m firstlook_ai.consumer
+sourcing: .venv/bin/python -m firstlook_sourcing.consumer
 slack:    .venv/bin/python -m firstlook_ingest.slack
 worker:   .venv/bin/python -m firstlook_workflows.worker

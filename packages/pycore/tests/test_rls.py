@@ -185,3 +185,19 @@ def test_audit_events_are_append_only(make_tenant):
         pytest.raises(psycopg.errors.RaiseException),
     ):
         conn.execute("DELETE FROM audit_events")
+
+
+def test_purge_tenant_is_the_only_way_to_delete_audit_rows(make_tenant):
+    from firstlook_core.db import system_tx
+
+    t, _ = make_tenant("Leaving Fund")
+    with pytest.raises(psycopg.errors.RaiseException), system_tx() as conn:
+        conn.execute("DELETE FROM tenants WHERE id = %s", (t,))  # cascade hits the audit trigger
+    with pytest.raises(psycopg.errors.InsufficientPrivilege), tenant_tx(t) as conn:
+        conn.execute("SELECT purge_tenant(%s)", (t,))  # the app role can't call it
+    with system_tx() as conn:
+        conn.execute("SELECT purge_tenant(%s)", (t,))
+        assert (
+            conn.execute("SELECT count(*) AS n FROM audit_events WHERE tenant_id = %s", (t,)).fetchone()["n"]
+            == 0
+        )

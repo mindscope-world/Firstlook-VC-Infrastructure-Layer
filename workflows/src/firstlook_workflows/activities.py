@@ -96,3 +96,31 @@ def crm_api_import(tenant_id: str, user_id: str, vendor: str, sealed_credentials
         )
         result = import_records(conn, tenant_id, vendor, records, source_id=source_id, actor_id=UUID(user_id))
     return asdict(result)
+
+
+@activity.defn
+def sourcing_collect(tenant_id: str) -> dict[str, Any]:
+    from firstlook_sourcing.service import collect_tenant
+
+    stats = collect_tenant(tenant_id)
+    return {
+        "discovered": stats.discovered,
+        "enriched": stats.enriched,
+        "observations": stats.observations,
+        "errors": stats.errors[:20],
+    }
+
+
+@activity.defn
+def sourcing_score(tenant_id: str) -> list[str]:
+    from firstlook_sourcing.service import score_tenant
+
+    return score_tenant(tenant_id)
+
+
+@activity.defn
+def sourcing_digest(tenant_id: str) -> dict[str, Any]:
+    from firstlook_sourcing import digest
+
+    with tenant_tx(tenant_id) as conn:
+        return digest.send(conn, tenant_id)

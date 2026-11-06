@@ -87,11 +87,12 @@ class FakeLlm:
 
     responder: Any = None
     calls: list[dict[str, Any]] = field(default_factory=list)
+    model: str = "fake"
 
     def structured(self, tenant_id, task, *, system, user, schema, max_tokens=16000) -> StructuredResult:
         self.calls.append({"tenant_id": str(tenant_id), "task": task, "system": system, "user": user})
         data = self.responder(task, system, user, schema) if self.responder else {}
-        return StructuredResult(data, "fake")
+        return StructuredResult(data, self.model)
 
     def embed(self, tenant_id, texts, task="embed") -> list[list[float]]:
         return [hash_embed(t) for t in texts]

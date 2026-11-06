@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 import { authRoutes } from "./routes/auth.js";
 import { graphRoutes } from "./routes/graph.js";
 import { slackRoutes } from "./routes/slack.js";
+import { sourcingRoutes } from "./routes/sourcing.js";
 import { workflowRoutes } from "./routes/workflow.js";
 
 export function buildApp() {
@@ -25,5 +26,6 @@ export function buildApp() {
   app.register(slackRoutes);
   app.register(graphRoutes);
   app.register(workflowRoutes);
+  app.register(sourcingRoutes);
   return app;
 }
