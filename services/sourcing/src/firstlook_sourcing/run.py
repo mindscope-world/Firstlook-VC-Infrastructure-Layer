@@ -31,6 +31,12 @@ from .rerank import CandidateFacts, Fact, rerank
 
 log = logging.getLogger("firstlook.sourcing.run")
 MAX_STORED = 500
+STAGE2_WEIGHT = 0.6
+
+
+def final_score(stage1: float, stage2: float | None) -> float:
+    """Blend the stage-1 score with the LLM re-rank, when the company was re-ranked."""
+    return stage1 if stage2 is None else (1 - STAGE2_WEIGHT) * stage1 + STAGE2_WEIGHT * stage2
 
 
 def _vec(text: str | None) -> list[float] | None:
@@ -253,7 +259,7 @@ def score_thesis(
     final: list[tuple[float, Scored]] = []
     for s in scored:
         r = reranked.get(s.company_id)
-        final.append(((0.4 * s.score + 0.6 * r.stage2) if r else s.score, s))
+        final.append((final_score(s.score, r.stage2 if r else None), s))
     final.sort(key=lambda x: x[0], reverse=True)
 
     for rank, (score, s) in enumerate(final[:MAX_STORED], start=1):

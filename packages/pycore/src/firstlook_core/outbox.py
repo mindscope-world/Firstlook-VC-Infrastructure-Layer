@@ -17,6 +17,9 @@ class Topics:
     RAW_INTERACTION = "interactions.raw"  # a new raw object is stored
     INTERACTION_RESOLVED = "interactions.resolved"  # parsed + entities resolved
     EXTRACTIONS_CREATED = "extractions.created"
+    DOCUMENT_STORED = "documents.stored"  # a document's bytes are stored; parse next
+    DOCUMENT_PARSED = "documents.parsed"  # pages are written; extract a fact sheet next
+    FACT_SHEET_CREATED = "fact_sheets.created"
     DEAL_EVENTS = "deals.events"
     CONNECTOR_EVENTS = "connectors.events"
 

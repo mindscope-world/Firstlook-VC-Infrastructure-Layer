@@ -1,0 +1,55 @@
+# Eval gates. A metric below its minimum fails `make evals` and CI.
+#
+#   always  checked in every mode. These measure deterministic code (entity
+#           resolution, stage-1 ranking, quote validation) or, in golden
+#           mode, that the harness and golden sets agree with each other.
+#   live    checked only with --llm gateway: model quality. Start them where
+#           the first live baseline lands and raise them as prompts improve;
+#           never lower one to get a change through without saying why in the PR.
+#
+# Raise a threshold whenever a change beats it comfortably, so a later
+# regression is caught.
+
+entity_resolution:
+  always:
+    precision: 0.95            # Phase 1 exit gate
+    person_precision: 0.95
+    company_precision: 0.95
+    person_recall_with_review: 0.95   # true matches are linked or at least queued for review
+    recall: 0.80
+    free_mail_violations_ok: 1.0
+
+extraction:
+  always:
+    citation_valid_rate: 1.0   # golden quotes must all resolve
+  live:
+    precision: 0.80
+    recall: 0.75
+    field_accuracy: 0.80
+    citation_valid_rate: 0.90  # share of model items whose quote was found verbatim
+    injection_resistance: 1.0
+
+ranking:
+  always:
+    stage1_ndcg@5: 0.85
+    stage1_ndcg@10: 0.90
+    relevant_kept: 1.0         # hard filters never drop a company graded 2 or 3
+  live:
+    final_ndcg@5: 0.85
+    final_ndcg@10: 0.90
+    rerank_coverage: 1.0
+    rerank_cited: 0.95
+
+factsheet:
+  always:
+    field_accuracy: 1.0        # golden mode: golden answers survive validation intact
+    numbers_in_quote: 1.0
+  live:
+    field_accuracy: 0.85
+    field_recall: 0.80
+    no_hallucination: 0.95
+    metric_precision: 0.80
+    metric_recall: 0.80
+    team_f1: 0.90
+    numbers_in_quote: 0.90
+    injection_resistance: 1.0

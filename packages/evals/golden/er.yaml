@@ -1,0 +1,152 @@
+# Entity-resolution golden set.
+#
+# Mentions arrive in the order listed, the way the resolver sees them from
+# email headers, calendar attendees, transcripts and CRM rows. `gold` names the
+# real-world entity; mentions sharing a gold id are the same person/company.
+# Every person and company here is invented.
+#
+# The traps that matter most for precision are marked "must not link": people
+# who share a surname, a first initial and an email domain (siblings,
+# co-founders, colleagues) and companies with near-identical names.
+
+team:
+  - [paul@savanna.vc, Paul Otieno, admin]
+  - [grace@savanna.vc, Grace Wambui, associate]
+
+people:
+  # Internal team, seen from their own mail.
+  - {gold: team-paul, email: Paul@Savanna.vc, name: Paul Otieno}
+  - {gold: team-grace, email: grace@savanna.vc, name: "Wambui, Grace"}
+
+  # Same address, different case and display names.
+  - {gold: wanjiru, email: wanjiru@kilimodata.co.ke, name: Wanjiru Kamau}
+  - {gold: wanjiru, email: Wanjiru@KilimoData.co.ke, name: Wanjiru}
+  - {gold: wanjiru, email: wanjiru@kilimodata.co.ke, name: Wanjiru K.}
+  # Personal address with an initial: should go to review, not auto-link.
+  - {gold: wanjiru, email: wanjiru.kamau@gmail.com, name: W. Kamau}
+  # Co-founder sister: same surname, same initial, same domain. Must not link.
+  - {gold: wairimu, email: wairimu@kilimodata.co.ke, name: Wairimu Kamau}
+
+  # Middle initial and "Surname, First" at the same domain: auto-link.
+  - {gold: jane, email: jane@pesaflow.africa, name: Jane Achieng}
+  - {gold: jane, email: jane.achieng@pesaflow.africa, name: Jane A. Achieng}
+  - {gold: jane, email: achieng.jane@pesaflow.africa, name: "Achieng, Jane"}
+  # Colleague with the same surname and first initial. Must not link.
+  - {gold: james, email: james@pesaflow.africa, name: James Achieng}
+  - {gold: james, email: j.achieng@pesaflow.africa, name: James Achieng}
+
+  # Honorifics and diacritics.
+  - {gold: amina, email: amina.yusuf@afyalink.health, name: Dr. Amina Yusuf}
+  - {gold: amina, email: a.yusuf@afyalink.health, name: Amina Yusuf}
+  - {gold: jose, email: jose@solarnest.io, name: José Álvarez}
+  - {gold: jose, email: jalvarez@solarnest.io, name: Jose Alvarez}
+
+  # Same full name at two different companies. Must not link.
+  - {gold: john-acme, email: john@acmelogistics.co.ke, name: John Kamau}
+  - {gold: john-bidii, email: john.kamau@bidiiagro.africa, name: John Kamau}
+  - {gold: john-bidii, email: jkamau@bidiiagro.africa, name: J. Kamau}
+
+  # Brothers at the same company, same initial. Must not link.
+  - {gold: peter, email: peter@dukadirect.com, name: Peter Otieno}
+  - {gold: philip, email: philip@dukadirect.com, name: Philip Otieno}
+  - {gold: peter, email: p.otieno@dukadirect.com, name: Peter Otieno}
+
+  # CRM identifiers.
+  - {gold: kofi, email: kofi@solarnest.io, name: Kofi Mensah}
+  - {gold: kofi, email: kofi.mensah@outlook.com, name: Kofi Mensah}
+  - {gold: kofi, email: kofi@solarnest.io, name: Kofi M., crm_id: "hubspot:77"}
+  - {gold: kofi, name: Kofi Mensah, crm_id: "hubspot:77"}
+
+  # Initial-only variant at the same domain, plus a namesake colleague. Must not link the two.
+  - {gold: folake, email: folake@baobab.capital, name: Folake Adeyemi}
+  - {gold: folake, email: fadeyemi@baobab.capital, name: F. Adeyemi}
+  - {gold: funmi, email: funmilayo@baobab.capital, name: Funmilayo Adeyemi}
+
+  # Double-barrelled surname added later.
+  - {gold: nia, email: nia@afyalink.health, name: Nia Odhiambo}
+  - {gold: nia, email: nia.odhiambo@afyalink.health, name: Nia Odhiambo-Wekesa}
+
+  # Lower-case display name; same first name different surname. Must not link.
+  - {gold: brian, email: brian@dukadirect.com, name: Brian Kiprop}
+  - {gold: brian, email: brian.kiprop@dukadirect.com, name: brian kiprop}
+  - {gold: brian-k, email: brian.kipchumba@dukadirect.com, name: Brian Kipchumba}
+
+  # Same first name, different companies.
+  - {gold: grace-m, email: grace@twigafoods.com, name: Grace Muthoni}
+  - {gold: grace-n, email: grace@mkopa.com, name: Grace Njeri}
+
+  # Near-identical names at different companies. Must not link.
+  - {gold: mohamed, email: mohamed.ali@safiri.co, name: Mohamed Ali}
+  - {gold: mohammed, email: mohammed.ali@kasha.rw, name: Mohammed Ali}
+  - {gold: mohamed, email: m.ali@safiri.co, name: Mohamed Ali}
+
+  # Name-only mention (a transcript speaker) after an email mention.
+  - {gold: baraka, email: baraka@safiri.co, name: Baraka Said}
+  - {gold: baraka, name: Baraka Said}
+
+  # Personal address with a fuller first name.
+  - {gold: chidi, email: chidi@lagospay.ng, name: Chidi Okafor}
+  - {gold: chidi, email: chidiokafor@gmail.com, name: Chidiebere Okafor}
+  # Same surname, same company, different first name. Must not link.
+  - {gold: ngozi, email: ngozi@lagospay.ng, name: Ngozi Okafor}
+
+  # Short vs long first name at different companies. Must not link.
+  - {gold: sam, email: sam@tujenge.co.tz, name: Sam Mwakyusa}
+  - {gold: samuel, email: samuel@nuru.energy, name: Samuel Mwakyusa}
+
+  # Email-only mentions (no display name).
+  - {gold: halima, email: halima.hassan@kasha.rw}
+  - {gold: halima, email: halima.hassan@kasha.rw, name: Halima Hassan}
+  - {gold: hassan, email: hassan@kasha.rw, name: Hassan Halima}
+
+companies:
+  # Seen first as an email domain, then by name and registry ID.
+  - {gold: kilimo, domain: kilimodata.co.ke}
+  - {gold: kilimo, name: Kilimo Data Ltd}
+  - {gold: kilimo, name: Kilimo Data, registry_id: PVT-KD123}
+  - {gold: kilimo, name: KILIMO DATA LIMITED, registry_id: PVT-KD123}
+  - {gold: kilimo, domain: www.kilimodata.co.ke}
+
+  - {gold: pesaflow, name: PesaFlow, domain: pesaflow.africa}
+  - {gold: pesaflow, name: PesaFlow Africa}
+  - {gold: pesaflow, name: Pesa Flow}
+  # Similar name, different company and domain. Must not link.
+  - {gold: pesapal, name: PesaPal, domain: pesapal.com}
+
+  - {gold: riftvalley, domain: riftvalley.vc}
+  - {gold: riftvalley, name: Rift Valley Partners}
+
+  # A four-letter domain label is too ambiguous to match a name on.
+  - {gold: abcd, domain: abcd.io}
+  - {gold: abcd-bakery, name: Abcd Bakery}
+
+  # Same leading word, different companies.
+  - {gold: zuri-health, name: Zuri Health, domain: zurihealth.com}
+  - {gold: zuri, name: Zuri, domain: zuri.co}
+
+  - {gold: twiga, name: Twiga Foods}
+  - {gold: twiga, name: Twiga Foods Limited, domain: twiga.com}
+  - {gold: twiga, domain: twiga.com}
+
+  # Country subsidiaries with their own domains are separate companies.
+  - {gold: acme-ke, name: Acme Logistics, domain: acmelogistics.co.ke}
+  - {gold: acme-ng, name: Acme Logistics Nigeria, domain: acmelogistics.ng}
+
+  - {gold: mkopa, name: M-KOPA, domain: m-kopa.com}
+  - {gold: mkopa, name: M-Kopa}
+  - {gold: mkopa, name: MKOPA}
+
+  - {gold: solarnest, name: SolarNest, domain: solarnest.io}
+  - {gold: solarnest, name: SolarNest Ltd}
+  - {gold: solarnest, name: Solar Nest}
+
+  - {gold: nuru-energy, name: Nuru Energy, domain: nuru.energy}
+  - {gold: nuru-health, name: Nuru Health}
+
+  # Registry ID is authoritative even when the trading name differs.
+  - {gold: safiri, name: Safiri Logistics, registry_id: TZ-554411}
+  - {gold: safiri, name: Safiri, registry_id: TZ-554411, domain: safiri.co}
+  - {gold: safiri, domain: safiri.co}
+
+  # Free-mail domains never become companies (mention resolves to nothing).
+  - {gold: null, domain: gmail.com}

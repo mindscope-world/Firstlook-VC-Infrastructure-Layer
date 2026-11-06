@@ -5,6 +5,7 @@ import { use } from "react";
 import { useApi } from "@/lib/api";
 import { date, STAGE_LABEL, usd } from "@/lib/format";
 import { Badge, Card, Empty, EntityLink, Loading, PageHeader, Strength, WarmPaths, type WarmPath } from "@/components/ui";
+import { DocumentList, UploadDocument, type DocumentRow } from "@/components/documents";
 
 interface CompanyDetail {
   id: string;
@@ -75,6 +76,18 @@ function Signals({ id }: { id: string }) {
   );
 }
 
+function Documents({ id }: { id: string }) {
+  const { data, error, reload } = useApi<DocumentRow[]>(`/documents?company_id=${id}`);
+  return (
+    <Card title="Documents">
+      {data ? <DocumentList docs={data} /> : <Loading error={error} />}
+      <div className="mt-4 border-t border-line pt-4">
+        <UploadDocument companyId={id} onUploaded={reload} />
+      </div>
+    </Card>
+  );
+}
+
 export default function CompanyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data, error } = useApi<CompanyDetail>(`/companies/${id}`);
@@ -90,6 +103,7 @@ export default function CompanyPage({ params }: { params: Promise<{ id: string }
           <Card title="Warm paths from your team">
             <WarmPaths paths={data.warm_paths} />
           </Card>
+          <Documents id={data.id} />
           <Card title="Interactions">
             {data.interactions.length === 0 ? (
               <Empty>None yet.</Empty>

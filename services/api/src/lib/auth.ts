@@ -41,6 +41,7 @@ const PERMISSIONS: Record<string, Role[]> = {
   "graph:read": ["admin", "partner", "associate", "platform", "finance", "viewer"],
   "review:decide": ["admin", "partner", "associate", "platform"],
   "extractions:decide": ["admin", "partner", "associate", "platform"],
+  "fact_sheets:decide": ["admin", "partner", "associate"],
   "deals:write": ["admin", "partner", "associate"],
   "deals:restrict": ["admin", "partner"],
   "audit:read": ["admin"],

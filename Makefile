@@ -1,7 +1,7 @@
 # Firstlook local development. Run `make help` for targets.
 COMPOSE := docker compose -f compose/docker-compose.yml --env-file .env
 
-.PHONY: help setup up up-full down dev seed seed-llm migrate add-user sourcing test test-py test-ts lint fmt build logs reset
+.PHONY: help setup up up-full down dev seed seed-llm migrate add-user sourcing evals evals-live test test-py test-ts lint fmt build logs reset
 
 help:
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -41,6 +41,12 @@ sourcing: ## Collect signals (network sources) and re-rank every thesis: make so
 
 dev: up ## Infrastructure + every service with reload (web on http://localhost:13000)
 	uv run honcho -f Procfile.dev start
+
+evals: ## Eval suites with golden answers (no model calls); fails on a threshold regression
+	uv run python -m firstlook_evals $(SUITES)
+
+evals-live: ## Eval suites against the live model via the gateway (needs `make dev` and ANTHROPIC_API_KEY)
+	uv run python -m firstlook_evals --llm gateway $(SUITES)
 
 test: test-py test-ts ## All tests (needs `make up` for DB tests)
 

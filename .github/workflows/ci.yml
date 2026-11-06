@@ -34,6 +34,21 @@ jobs:
         env: { ENV: ci }
       - run: uv run pytest -m integration workflows
         env: { ENV: ci }
+      # Golden answers: entity resolution and stage-1 ranking are scored for real;
+      # model-dependent suites check the harness. Live model scores: evals-live.yml.
+      - name: Evals
+        run: uv run python -m firstlook_evals --report evals-report.json
+        env:
+          ENV: ci
+          DATABASE_URL: postgresql://firstlook_app:firstlook_app@localhost:15432/firstlook_test
+          DATABASE_OWNER_URL: postgresql://firstlook:firstlook@localhost:15432/firstlook_test
+          DATABASE_SYSTEM_URL: postgresql://firstlook_system:firstlook_system@localhost:15432/firstlook_test
+          STORAGE_BACKEND: local
+          STORAGE_LOCAL_ROOT: /tmp/firstlook-objects
+          BUS_BACKEND: memory
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: evals-golden, path: evals-report.json, if-no-files-found: ignore }
 
   typescript:
     runs-on: ubuntu-latest

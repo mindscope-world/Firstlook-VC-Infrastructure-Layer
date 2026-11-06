@@ -1,0 +1,87 @@
+name: evals-live
+
+# Scores the live model whenever a prompt, schema, model route or golden set
+# changes. A drop below a `live` threshold in packages/evals/thresholds.yaml
+# fails the PR. Needs the ANTHROPIC_API_KEY repository secret; without it the
+# job is skipped with a notice (forks never get the secret).
+
+on:
+  pull_request:
+    paths:
+      - services/ai/**
+      - services/sourcing/src/firstlook_sourcing/rerank.py
+      - services/sourcing/src/firstlook_sourcing/ranker.py
+      - services/gateway/src/firstlook_gateway/routing.py
+      - services/gateway/src/firstlook_gateway/providers.py
+      - services/documents/src/firstlook_documents/parse.py
+      - services/resolver/src/firstlook_resolver/**
+      - packages/evals/**
+      - packages/fixtures/src/firstlook_fixtures/fund.py
+      - packages/fixtures/src/firstlook_fixtures/documents.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evals-live-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV: ci
+      DATABASE_URL: postgresql://firstlook_app:firstlook_app@localhost:15432/firstlook
+      DATABASE_OWNER_URL: postgresql://firstlook:firstlook@localhost:15432/firstlook
+      DATABASE_SYSTEM_URL: postgresql://firstlook_system:firstlook_system@localhost:15432/firstlook
+      STORAGE_BACKEND: local
+      STORAGE_LOCAL_ROOT: /tmp/firstlook-objects
+      BUS_BACKEND: memory
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: firstlook
+          POSTGRES_PASSWORD: firstlook
+          POSTGRES_DB: firstlook
+        ports: ["15432:5432"]
+        options: --health-cmd "pg_isready -U firstlook" --health-interval 3s --health-retries 30
+    steps:
+      - name: Check for the API key
+        id: key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::notice::ANTHROPIC_API_KEY secret not set; skipping live evals"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v5
+        if: steps.key.outputs.skip != 'true'
+      - uses: astral-sh/setup-uv@v6
+        if: steps.key.outputs.skip != 'true'
+      - name: Set up
+        if: steps.key.outputs.skip != 'true'
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils tesseract-ocr
+          uv python install 3.12 && uv sync --frozen
+          PGPASSWORD=firstlook psql -h localhost -p 15432 -U firstlook -d firstlook -f compose/postgres/init/00-roles.sql
+          uv run python -m firstlook_core.migrate
+      - name: Start the LLM gateway
+        if: steps.key.outputs.skip != 'true'
+        run: |
+          uv run uvicorn firstlook_gateway.app:app --port 14300 > gateway.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:14300/healthz && exit 0; sleep 1; done
+          cat gateway.log; exit 1
+      - name: Live evals
+        if: steps.key.outputs.skip != 'true'
+        run: uv run python -m firstlook_evals --llm gateway --report evals-live-report.json
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.key.outputs.skip != 'true'
+        with:
+          name: evals-live
+          path: |
+            evals-live-report.json
+            gateway.log
+          if-no-files-found: ignore

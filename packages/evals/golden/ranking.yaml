@@ -1,0 +1,179 @@
+# Sourcing-ranking golden set.
+#
+# One thesis and a pool of invented companies, each graded by how much a
+# partner at the fund would want to see it in the feed:
+#   3  take the meeting this week     2  worth a look
+#   1  marginal                       0  not a fit
+# Profiles and signals are what the ranker would have from vendors, registries
+# and news; `as_of` pins "today" so recency features are stable.
+
+as_of: 2026-10-01
+
+thesis:
+  name: East Africa financial inclusion
+  sectors: [fintech, agritech]
+  stages: [pre-seed, seed]
+  geographies: [east-africa]
+  cheque_min_usd: 250000
+  cheque_max_usd: 1000000
+  founder_profile: Operators who have built distribution in informal markets; technical co-founder in place.
+  description: >-
+    Credit, payments and savings infrastructure for smallholder farmers, informal merchants
+    and savings groups, built on mobile money.
+
+companies:
+  - name: Kilimo Data
+    relevance: 3
+    sectors: [agritech, fintech]
+    stage: seed
+    country: KE
+    founded_year: 2023
+    headcount: 14
+    description: Credit scores for smallholder farmers from satellite imagery and mobile money data, sold to lenders.
+    funding: {usd: 400000, type: pre-seed, date: 2025-12-10}
+    open_roles: 4
+    open_roles_before: 2
+    news: [{title: "Kilimo Data signs second lender partner", date: 2026-09-12}]
+    warm: {who: Paul Otieno knows Wanjiru Kamau, strength: 0.71}
+
+  - name: Chama Pay
+    relevance: 3
+    sectors: [fintech]
+    stage: pre-seed
+    country: UG
+    founded_year: 2025
+    headcount: 6
+    description: Digital savings and credit for savings groups (chamas) on mobile money, with group-backed loans.
+    open_roles: 3
+    github_repos: 5
+    news: [{title: "Chama Pay launches in Kampala", date: 2026-08-20}]
+
+  - name: Duka Credit
+    relevance: 3
+    sectors: [fintech, commerce]
+    stage: seed
+    country: TZ
+    founded_year: 2024
+    headcount: 22
+    description: Inventory credit and payments for informal merchants and kiosks, repaid through mobile money.
+    funding: {usd: 600000, type: pre-seed, date: 2025-11-01}
+    open_roles: 6
+    open_roles_before: 3
+
+  - name: Mavuno Finance
+    relevance: 2
+    sectors: [agritech, fintech]
+    stage: pre-seed
+    country: RW
+    founded_year: 2025
+    headcount: 5
+    description: Input financing for farmer cooperatives, disbursed and repaid via mobile money.
+
+  - name: SokoLedger
+    relevance: 2
+    sectors: [fintech, saas]
+    stage: seed
+    country: KE
+    founded_year: 2022
+    headcount: 18
+    description: Bookkeeping and payment acceptance app for informal retailers, with merchant cash advances.
+    open_roles: 2
+    news: [{title: "SokoLedger passes 30,000 merchants", date: 2026-07-30}]
+
+  - name: Bima Shamba
+    relevance: 1
+    sectors: [insurtech, agritech]
+    stage: seed
+    country: KE
+    founded_year: 2023
+    headcount: 11
+    description: Index-based crop insurance for smallholders, sold through agro-dealers.
+
+  - name: PesaFlow
+    relevance: 1
+    sectors: [fintech]
+    stage: series-a
+    country: KE
+    founded_year: 2020
+    headcount: 85
+    description: Payment orchestration for banks and large merchants across East Africa.
+    funding: {usd: 6000000, type: series-a, date: 2026-06-15}
+    open_roles: 12
+    warm: {who: Amani Njoroge knows Jane Achieng, strength: 0.64}
+
+  - name: Lagos Ledger
+    relevance: 0
+    sectors: [fintech]
+    stage: seed
+    country: NG
+    founded_year: 2023
+    headcount: 20
+    description: Savings and credit for informal merchants in Lagos markets, built on mobile money and agents.
+    open_roles: 5
+
+  - name: AfyaLink
+    relevance: 0
+    sectors: [healthtech]
+    stage: seed
+    country: KE
+    founded_year: 2022
+    headcount: 25
+    description: Clinic management software and patient records for private clinics.
+    open_roles: 4
+
+  - name: Safiri Freight
+    relevance: 0
+    sectors: [logistics]
+    stage: pre-seed
+    country: TZ
+    founded_year: 2025
+    headcount: 7
+    description: Cross-border freight marketplace connecting shippers and truckers.
+
+  - name: Tembo Growth Bank
+    relevance: 0
+    sectors: [fintech]
+    stage: growth
+    country: KE
+    founded_year: 2012
+    headcount: 900
+    description: Licensed digital bank offering SME loans and savings.
+    funding: {usd: 120000000, type: growth, date: 2026-03-01}
+
+  - name: Nuru Solar
+    relevance: 0
+    sectors: [climate]
+    stage: seed
+    country: KE
+    founded_year: 2021
+    headcount: 30
+    description: Pay-as-you-go solar home systems financed with mobile money instalments.
+    open_roles: 3
+
+  - name: FarmGrid
+    relevance: 2
+    sectors: [agritech]
+    stage: seed
+    country: ET
+    founded_year: 2024
+    headcount: 9
+    description: Market linkage and digital payments for smallholder coffee farmers.
+    github_repos: 3
+
+  - name: Kazi Wallet
+    relevance: 1
+    sectors: [fintech]
+    stage: pre-seed
+    country: KE
+    founded_year: 2026
+    headcount: 2
+    description: Earned-wage access for gig workers.
+
+  - name: EduPesa
+    relevance: 0
+    sectors: [edtech, fintech]
+    stage: seed
+    country: UG
+    founded_year: 2023
+    headcount: 12
+    description: School fee financing for private schools.

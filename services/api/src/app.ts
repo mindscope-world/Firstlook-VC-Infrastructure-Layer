@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import { ZodError } from "zod";
 import { authRoutes } from "./routes/auth.js";
+import { documentRoutes } from "./routes/documents.js";
 import { graphRoutes } from "./routes/graph.js";
 import { slackRoutes } from "./routes/slack.js";
 import { sourcingRoutes } from "./routes/sourcing.js";
@@ -27,5 +28,6 @@ export function buildApp() {
   app.register(graphRoutes);
   app.register(workflowRoutes);
   app.register(sourcingRoutes);
+  app.register(documentRoutes);
   return app;
 }

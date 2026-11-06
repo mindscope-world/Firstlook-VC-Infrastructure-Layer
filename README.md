@@ -23,13 +23,15 @@ apps/web              Next.js product UI; proxies /api/* to the services
 services/api          TypeScript (Fastify) API: graph, review queue, extractions, deals, Slack command
 services/ingest       Python: OAuth connectors, sync, CRM import, Slack install + notifications
 services/resolver     Python: MIME parsing, quote/signature stripping, entity resolution, relationship strength
-services/ai           Python: cited extraction of intros, next steps, deal mentions
+services/ai           Python: cited extraction of intros, next steps, deal mentions; deck/model fact sheets
+services/documents    Python: diligence documents (PDF, PPTX, XLSX, OCR for scans) parsed into pages
 services/gateway      Python: LLM gateway (budgets, redaction, metering, audit; Claude via the Anthropic SDK)
 services/sourcing     Python: theses, company signals (vendor, registries, news, jobs, GitHub), two-stage ranking, digest
 workflows             Temporal workflows (account sync, nightly strength, CRM API import)
 packages/pycore       Shared Python: tenant-scoped DB, encryption, adapters, outbox, auth
 packages/schema       SQL migrations: tables, row-level security, merge / warm-path / decision functions
-packages/fixtures     Synthetic funds, seed script
+packages/fixtures     Synthetic funds and diligence documents, seed script
+packages/evals        Golden sets and scoring (entity resolution, extraction, ranking, fact sheets); CI gates
 compose/              Local stack: Postgres+pgvector, Redis, SeaweedFS, Redpanda, Temporal, ClickHouse, LiteLLM, Mailpit
 infra/docker          Container images
 docs/adr              Architecture decisions
@@ -43,6 +45,9 @@ connector ──▶ raw object (encrypted, S3) + sources row + outbox ──rela
       ──▶ outbox ──▶ interactions.resolved
   ──▶ ai: extraction through the gateway, verbatim citations ──▶ proposed extractions
   ──▶ people accept or reject in the Inbox ──▶ graph edges, deals ──▶ deals.events ──▶ Slack
+
+email attachment / upload ──▶ documents.stored ──▶ documents: parse pages (OCR for scans)
+  ──▶ documents.parsed ──▶ ai: fact sheet, every value cited to a page ──▶ accept or reject
 ```
 
 Tenant isolation is enforced by Postgres row-level security ([ADR 0003](docs/adr/0003-tenant-isolation.md)).
@@ -52,6 +57,7 @@ Tenant isolation is enforced by Postgres row-level security ([ADR 0003](docs/adr
 ```bash
 make up && make test   # Python (pytest) + TypeScript (vitest); DB tests use the firstlook_test database
 make lint
+make evals             # eval suites with golden answers; `make evals-live` scores the real model
 ```
 
 Ports (local): web 13000, landing page 13001, api 14100, ingest 14200, gateway 14300, Postgres 15432, S3 18333, Kafka 19092, Temporal 17233 (UI 18233), ClickHouse 18123, Mailpit 18025, Langfuse 13100, Grafana 13300.

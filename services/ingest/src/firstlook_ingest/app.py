@@ -1,4 +1,5 @@
-"""Ingest HTTP service: connecting accounts, sync control, CRM imports, Slack install.
+"""Ingest HTTP service: connecting accounts, sync control, CRM imports, document
+uploads, Slack install.
 
 Served behind the web app at /api/ingest/* (Next.js rewrite). Callers are
 authenticated with the session JWT issued by services/api (cookie fl_session
@@ -16,7 +17,7 @@ from uuid import UUID
 
 import jwt
 from fastapi import Cookie, Depends, FastAPI, File, Form, Header, HTTPException, Query, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field
 
@@ -25,6 +26,8 @@ from firstlook_core.auth import Principal, verify_session
 from firstlook_core.config import get_settings
 from firstlook_core.crypto import seal
 from firstlook_core.db import tenant_tx
+from firstlook_core.objects import TenantObjects
+from firstlook_documents.store import MAX_DOCUMENT_BYTES, store_document
 
 from . import slack, temporal
 from .accounts import fresh_tokens, save_account, sync_once
@@ -317,6 +320,94 @@ async def import_api(body: ApiImport, p: User) -> dict[str, str]:
     except Exception as e:  # noqa: BLE001
         raise HTTPException(503, f"workflow engine unavailable: {e}") from e
     return {"workflow_id": workflow_id}
+
+
+# -- documents --------------------------------------------------------------------
+
+UPLOAD_ROLES = {"admin", "partner", "associate", "platform", "finance"}
+# Served with their own type; anything else downloads as octet-stream so an
+# uploaded HTML or SVG file can never render in the app's origin.
+_SAFE_DOWNLOAD_TYPES = {
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "image/png",
+    "image/jpeg",
+}
+
+
+@app.post("/documents")
+async def upload_document(
+    p: User,
+    file: Annotated[UploadFile, File()],
+    company_id: Annotated[UUID | None, Form()] = None,
+    deal_id: Annotated[UUID | None, Form()] = None,
+) -> dict[str, Any]:
+    """Upload a deck, financial model or other diligence document. It is
+    parsed and a fact sheet proposed in the background."""
+    if p.role not in UPLOAD_ROLES:
+        raise HTTPException(403, "viewers can't upload documents")
+    data = await file.read(MAX_DOCUMENT_BYTES + 1)
+    if len(data) > MAX_DOCUMENT_BYTES:
+        raise HTTPException(413, f"documents are limited to {MAX_DOCUMENT_BYTES // (1024 * 1024)} MB")
+    if not data:
+        raise HTTPException(400, "empty file")
+    with tenant_tx(p.tenant_id, p.user_id, p.role) as conn:
+        # Foreign keys don't check tenancy, so confirm the caller can see what they link to.
+        if company_id and not conn.execute("SELECT 1 FROM companies WHERE id = %s", (company_id,)).fetchone():
+            raise HTTPException(404, "company not found")
+        if deal_id and not conn.execute("SELECT 1 FROM deals WHERE id = %s", (deal_id,)).fetchone():
+            raise HTTPException(404, "deal not found")
+        try:
+            stored = store_document(
+                conn,
+                p.tenant_id,
+                data,
+                filename=file.filename or "document",
+                content_type=file.content_type,
+                origin="upload",
+                uploaded_by=p.user_id,
+                company_id=company_id,
+                deal_id=deal_id,
+            )
+        except LookupError as e:
+            raise HTTPException(409, str(e)) from e
+        doc = conn.execute(
+            "SELECT id, filename, format, status, company_id, deal_id FROM documents WHERE id = %s",
+            (stored.document_id,),
+        ).fetchone()
+    return {**doc, "created": stored.created}
+
+
+@app.get("/documents/{document_id}/file")
+def download_document(document_id: UUID, p: User) -> Response:
+    with tenant_tx(p.tenant_id, p.user_id, p.role) as conn:
+        doc = conn.execute(
+            "SELECT id, filename, content_type, object_uri FROM documents WHERE id = %s", (document_id,)
+        ).fetchone()
+        if doc is None:
+            raise HTTPException(404, "document not found")
+        data = TenantObjects(conn, p.tenant_id).get(doc["object_uri"])
+        audit.record(
+            conn,
+            p.tenant_id,
+            "document.downloaded",
+            "document",
+            doc["id"],
+            actor_type="user",
+            actor_id=p.user_id,
+        )
+    media = doc["content_type"] if doc["content_type"] in _SAFE_DOWNLOAD_TYPES else "application/octet-stream"
+    filename = doc["filename"].replace('"', "'").encode("ascii", "replace").decode()
+    return Response(
+        data,
+        media_type=media,
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "private, no-store",
+        },
+    )
 
 
 # -- Slack ----------------------------------------------------------------------

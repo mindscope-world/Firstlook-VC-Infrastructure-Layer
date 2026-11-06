@@ -16,6 +16,8 @@ from email.message import EmailMessage
 from email.utils import format_datetime
 from typing import Any
 
+from .documents import kilimo_deck_pdf
+
 TEAM = [
     ("paul@savanna.vc", "Paul Otieno", "admin"),
     ("amani@savanna.vc", "Amani Njoroge", "partner"),
@@ -95,9 +97,6 @@ def _person(name: str, email: str = "", company: str = "") -> dict[str, str]:
     return {"name": name, "email": email, "company": company}
 
 
-FAKE_PDF = b"%PDF-1.4\n% Synthetic deck for Firstlook fixtures\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
-
-
 def savanna(now: datetime | None = None) -> FundFixture:
     now = now or datetime.now(UTC)
     d = lambda days, hour=9: _days_ago(now, days, hour)  # noqa: E731
@@ -166,7 +165,7 @@ def savanna(now: datetime | None = None) -> FundFixture:
                 "linkedin.com/in/wanjiru-kamau-kilimo\n\n"
                 "On Mon, Joseph Mutua <joseph@riftvalley.vc> wrote:\n> Paul, Wanjiru,\n> Happy to connect you two.\n"
             ),
-            attachments=[("Kilimo Data - Seed Deck.pdf", "application/pdf", FAKE_PDF)],
+            attachments=[("Kilimo Data - Seed Deck.pdf", "application/pdf", kilimo_deck_pdf())],
             golden={
                 "intros": [],
                 "next_steps": [

@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
 import {
   Briefcase,
   Building2,
+  FileText,
   GitMerge,
   Inbox,
   LayoutDashboard,
@@ -37,6 +38,7 @@ const NAV = [
   { href: "/people", label: "People", icon: Users },
   { href: "/companies", label: "Companies", icon: Building2 },
   { href: "/deals", label: "Deals", icon: Briefcase },
+  { href: "/documents", label: "Documents", icon: FileText },
   { href: "/review", label: "Review queue", icon: GitMerge },
   { href: "/connections", label: "Connections", icon: Plug },
   { href: "/settings", label: "Settings", icon: Settings },

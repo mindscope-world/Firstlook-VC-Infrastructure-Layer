@@ -35,6 +35,7 @@ DATA = Path(__file__).resolve().parents[2] / "data"
 _CANDIDATE = re.compile(r"^\[(c\d+)\] (.+)$", re.M)
 _FACT = re.compile(r"^  (c\d+\.f\d+): (.+)$", re.M)
 _ID = re.compile(r'<interaction id="<([^@>]+)@fixtures\.firstlook\.local>"')
+_FILENAME = re.compile(r'<document id="[^"]*" filename="([^"]+)"')
 
 
 def golden_llm(fixtures: list[FundFixture]) -> FakeLlm:
@@ -43,10 +44,21 @@ def golden_llm(fixtures: list[FundFixture]) -> FakeLlm:
     def respond(task: str, system: str, user: str, schema: dict[str, Any]) -> dict[str, Any]:
         if task == "sourcing.rerank":
             return fixture_rerank(user)
+        if task == "extract.factsheet":
+            return golden_fact_sheet(user)
         m = _ID.search(user)
         return golden.get(m.group(1), {}) if m else {"intros": [], "next_steps": [], "deal_mentions": []}
 
     return FakeLlm(responder=respond, model="fixture (no model call)")
+
+
+def golden_fact_sheet(prompt: str) -> dict[str, Any]:
+    """The golden fact sheet for a fixture document, found by its filename."""
+    from .documents import golden_by_filename
+
+    m = _FILENAME.search(prompt)
+    golden = golden_by_filename().get(m.group(1)) if m else None
+    return golden or {"company": {}, "team": [], "metrics": [], "round": {}}
 
 
 def fixture_rerank(prompt: str) -> dict[str, Any]:
@@ -104,16 +116,49 @@ def seed_sourcing(fixture: FundFixture, tenant_id: UUID) -> None:
         score_all(conn, tenant_id)
 
 
+def seed_documents(fixture: FundFixture, tenant_id: UUID) -> None:
+    """Uploads on top of the deck that arrives by email: Kilimo's financial
+    model (linked to the company) and a deck from a company not yet in the CRM."""
+    from firstlook_documents.store import store_document
+
+    from .documents import DOCUMENTS
+
+    if fixture.slug != "savanna":
+        return
+    by_key = {d.key: d for d in DOCUMENTS}
+    with tenant_tx(tenant_id) as conn:
+        uploader = conn.execute("SELECT id FROM users WHERE email = 'grace@savanna.vc'").fetchone()["id"]
+        kilimo = conn.execute("SELECT id FROM companies WHERE domain = 'kilimodata.co.ke'").fetchone()
+        for key, company in (("kilimo-model", kilimo["id"] if kilimo else None), ("chama-deck", None)):
+            d = by_key[key]
+            store_document(
+                conn,
+                tenant_id,
+                d.data,
+                filename=d.filename,
+                content_type=d.content_type,
+                origin="upload",
+                uploaded_by=uploader,
+                company_id=company,
+            )
+
+
 def _drain(bus: InMemoryBus) -> None:
     """Relay the outbox and run consumers until no events remain."""
     from firstlook_ai.consumer import handle as ai_handle
+    from firstlook_documents.consumer import handle as documents_handle
     from firstlook_resolver.consumer import handle as resolver_handle
 
     while True:
         with system_tx() as conn:
             relayed = outbox.relay_once(conn, bus)
         handled = bus.consume([outbox.Topics.RAW_INTERACTION], "resolver", resolver_handle)
-        handled += bus.consume([outbox.Topics.INTERACTION_RESOLVED], "ai-extraction", ai_handle)
+        handled += bus.consume(
+            [outbox.Topics.INTERACTION_RESOLVED, outbox.Topics.DOCUMENT_PARSED], "ai-extraction", ai_handle
+        )
+        handled += bus.consume(
+            [outbox.Topics.INTERACTION_RESOLVED, outbox.Topics.DOCUMENT_STORED], "documents", documents_handle
+        )
         if relayed == 0 and handled == 0:
             return
 
@@ -185,6 +230,8 @@ def seed_fund(fixture: FundFixture, bus: InMemoryBus) -> UUID:
                 actor_id=admin_id,
             )
     _drain(bus)
+    seed_documents(fixture, tenant_id)
+    _drain(bus)
     seed_sourcing(fixture, tenant_id)
 
     with tenant_tx(tenant_id) as conn:
@@ -193,6 +240,8 @@ def seed_fund(fixture: FundFixture, bus: InMemoryBus) -> UUID:
             " (SELECT count(*) FROM people p JOIN entities e ON e.id = p.id WHERE e.merged_into IS NULL) AS people,"
             " (SELECT count(*) FROM companies) AS companies,"
             " (SELECT count(*) FROM extractions) AS extractions,"
+            " (SELECT count(*) FROM documents) AS documents,"
+            " (SELECT count(*) FROM fact_sheets) AS fact_sheets,"
             " (SELECT count(*) FROM er_candidates WHERE status = 'pending') AS review,"
             " (SELECT count(*) FROM edges WHERE type = 'knows' AND valid_to IS NULL) AS knows,"
             " (SELECT count(*) FROM company_scores) AS scored_companies"
