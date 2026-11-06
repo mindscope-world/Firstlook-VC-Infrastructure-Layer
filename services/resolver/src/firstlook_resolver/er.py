@@ -123,11 +123,26 @@ def person_name_similarity(a: str, b: str) -> float:
     if not na or not nb:
         return 0.0
     score = fuzz.token_sort_ratio(na, nb) / 100
-    # "Jane Doe" vs "Jane A. Doe" / "J. Doe": compare first initial + surname.
+    # "Jane Doe" vs "Jane A. Doe" / "J. Doe": same surname and the given names
+    # agree (equal, or one is just the other's initial).
     ta, tb = na.split(), nb.split()
-    if len(ta) >= 2 and len(tb) >= 2 and ta[-1] == tb[-1] and ta[0][0] == tb[0][0]:
-        score = max(score, 0.9)
+    if len(ta) >= 2 and len(tb) >= 2 and ta[-1] == tb[-1]:
+        fa, fb = ta[0], tb[0]
+        if fa == fb or (min(len(fa), len(fb)) == 1 and fa[0] == fb[0]):
+            score = max(score, 0.9)
     return score
+
+
+def given_names_conflict(a: str, b: str) -> bool:
+    """Both names spell out a different given name ("Jane Achieng" vs "James
+    Achieng", "Halima Hassan" vs "Hassan Halima"). Colleagues and relatives
+    often share a surname and an email domain, so string similarity alone
+    can't tell them apart: such pairs go to review instead of auto-linking."""
+    ta, tb = normalise_person_name(a).split(), normalise_person_name(b).split()
+    if len(ta) < 2 or len(tb) < 2:
+        return False
+    fa, fb = ta[0], tb[0]
+    return len(fa) > 1 and len(fb) > 1 and fa != fb
 
 
 @dataclass
@@ -375,6 +390,8 @@ class Resolver:
     ) -> Resolution | None:
         email = email.lower().strip() if email else None
         if email and (hit := self._by_identifier("email", email)):
+            if crm_id:
+                self.add_identifier(hit, "crm_id", crm_id, source_id)
             self._enrich_person(hit, title=title, company_id=company_id)
             return Resolution(hit, False, "identifier")
         if crm_id and (hit := self._by_identifier("crm_id", crm_id)):
@@ -453,10 +470,14 @@ class Resolver:
                 or (company_id and info and info["company_id"] == company_id)
             )
             score = min(1.0, 0.7 * name_sim + 0.3 * embed_sim + (0.15 if same_org else 0.0))
+            conflict = given_names_conflict(name, cand["canonical_name"])
+            if conflict:
+                score = min(score, AUTO_LINK - 0.01)
             features = {
                 "name_sim": round(name_sim, 3),
                 "embed_sim": round(embed_sim, 3),
                 "same_org": same_org,
+                "given_name_conflict": conflict,
             }
             if best is None or score > best["score"]:
                 best = {

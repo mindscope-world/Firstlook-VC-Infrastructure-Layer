@@ -89,3 +89,31 @@ def test_name_matches_company_known_only_by_domain(make_tenant, llm):
         # Short labels are too ambiguous to match on.
         short = r.resolve_company(domain="abcd.io")
         assert r.resolve_company(name="Abcd Bakery").entity_id != short.entity_id
+
+
+def test_given_name_conflicts():
+    from firstlook_resolver.er import given_names_conflict
+
+    assert given_names_conflict("Jane Achieng", "James Achieng")
+    assert given_names_conflict("Halima Hassan", "Hassan Halima")
+    assert not given_names_conflict("W. Kamau", "Wanjiru Kamau")  # initial
+    assert not given_names_conflict("Jane A. Achieng", "Achieng, Jane")
+    assert not given_names_conflict("Wanjiru", "Wanjiru Kamau")  # single token
+    # The initial bump no longer applies to two different full given names.
+    assert person_name_similarity("Peter Otieno", "Philip Otieno") < 0.9
+
+
+@pytest.mark.db
+def test_colleagues_sharing_surname_and_domain_go_to_review(make_tenant, llm):
+    from firstlook_core.db import tenant_tx
+
+    t, _ = make_tenant("Colleagues Fund")
+    with tenant_tx(t) as conn:
+        r = Resolver(conn, t, llm)
+        jane = r.resolve_person(email="jane@pesaflow.africa", name="Jane Achieng")
+        james = r.resolve_person(email="james@pesaflow.africa", name="James Achieng")
+        assert james.entity_id != jane.entity_id and james.queued
+        assert james.features["given_name_conflict"] is True
+        # An email hit still records the CRM id, so a later CRM-only row links.
+        r.resolve_person(email="jane@pesaflow.africa", name="Jane", crm_id="hubspot:9")
+        assert r.resolve_person(name="Jane Achieng", crm_id="hubspot:9").entity_id == jane.entity_id
